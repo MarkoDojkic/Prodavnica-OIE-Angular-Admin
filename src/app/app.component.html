@@ -1,0 +1,38 @@
+<div>
+    <mat-toolbar fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="2%">
+        <span [fxFlex.gt-sm]="15" [fxFlex.lt-sm]="25">Продавница ОИЕ <br> © 2021 Марко Дојкић</span>
+        
+        <div [fxHide.lt-sm]="true" fxFlex="75" fxLayoutGap="2%">
+            <button mat-stroked-button routerLink="/products" fxFlex>
+                Производи   
+            </button>
+            <button mat-stroked-button routerLink="/orders" fxFlex>
+                Поруџбине   
+            </button>
+            <button mat-stroked-button routerLink="/accounts" fxFlex>
+                Кориснички налози   
+            </button>
+            <button mat-stroked-button color="warn" (click)="logout()" fxFlex>
+                Излогуј ме
+            </button>
+        </div>
+
+        <div [fxHide.gt-xs]="true" fxFlex="55" fxLayoutGap="4%">
+            <button mat-icon-button routerLink="/products" fxFlex>
+                <mat-icon>shopping_basket</mat-icon>   
+            </button>
+            <button mat-icon-button routerLink="/orders" fxFlex>
+                <mat-icon>assignment</mat-icon>
+            </button>
+            <button mat-icon-button routerLink="/accounts" fxFlex>
+                <mat-icon>assignment_ind</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="logout()" fxFlex>
+                <mat-icon>person_outline</mat-icon>
+            </button>
+        </div>
+
+        <mat-slide-toggle (change)="onDarkModeChange($event)" [checked]="isDarkMode" [fxFlex.gt-sm]="8" [fxFlex.lt-sm]="20">Тамни<br>режим</mat-slide-toggle>
+    </mat-toolbar>
+</div>
+<router-outlet></router-outlet>
