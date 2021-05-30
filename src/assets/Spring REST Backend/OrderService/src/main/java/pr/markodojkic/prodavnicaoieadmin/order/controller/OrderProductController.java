@@ -38,7 +38,7 @@ public class OrderProductController {
         this.orderProductService.deleteAllOrderedProductsByOrder(order_id);
     }
 
-    @RequestMapping(value = "deleteAllByOrder/{product_id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "deleteAllByProduct/{product_id}", method = RequestMethod.DELETE)
     @CrossOrigin(origins = {"http://localhost:51680", "https://localhost:51680"})
     public void deleteAllOrderedProductsByProduct(@PathVariable int product_id){
         this.orderProductService.deleteAllOrderedProductsByProduct(product_id);
