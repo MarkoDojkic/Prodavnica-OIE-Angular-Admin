@@ -3,7 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import Swal from 'sweetalert2';
-import { CryptoService } from './auth/crypto/crypto.service';
+import { CryptoService } from './services/crypto/crypto.service';
 
 @Component({
   selector: 'app-root',
