@@ -14,37 +14,37 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping("insert")
-    @CrossOrigin("*")
+    @CrossOrigin(origins = {"http://localhost:51680", "https://localhost:51680"})
     public Account addNewAccount(@RequestBody Account newAccount) {
         return this.accountService.addNewAccount(newAccount);
     }
 
     @RequestMapping(value ="update/{id}", method = RequestMethod.PATCH)
-    @CrossOrigin("*")
+    @CrossOrigin(origins = {"http://localhost:51680", "https://localhost:51680"})
     public Account updateAccount(@PathVariable int id, @RequestBody Account account) {
         return this.accountService.updateAccountById(id, account);
     }
 
     @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
-    @CrossOrigin("*")
+    @CrossOrigin(origins = {"http://localhost:51680", "https://localhost:51680"})
     public void deleteAccount(@PathVariable int id) {
         this.accountService.deleteAccountById(id);
     }
 
     @RequestMapping(value = "find/{id}", method = RequestMethod.GET)
-    @CrossOrigin("*")
+    @CrossOrigin(origins = {"http://localhost:51680", "https://localhost:51680"})
     public Account findAccount(@PathVariable int id) {
         return this.accountService.findAccountById(id);
     }
 
     @GetMapping("getTotalNumber")
-    @CrossOrigin("*")
+    @CrossOrigin(origins = {"http://localhost:51680", "https://localhost:51680"})
     public long getTotalNumberOfRegisteredAccounts() {
         return this.accountService.getTotalNumberOfRegisteredAccounts();
     }
 
     @GetMapping("listAll")
-    @CrossOrigin("*")
+    @CrossOrigin(origins = {"http://localhost:51680", "https://localhost:51680"})
     public List<Account> listAllAccounts() {
         return this.accountService.listAllAccounts();
     }

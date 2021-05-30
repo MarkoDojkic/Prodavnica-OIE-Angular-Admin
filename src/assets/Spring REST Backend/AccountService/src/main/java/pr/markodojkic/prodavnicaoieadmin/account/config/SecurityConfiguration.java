@@ -34,9 +34,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest()
-          .fullyAuthenticated().and().httpBasic()
-          .authenticationEntryPoint(authenticationEntryPoint).and().csrf().disable();
+        http.cors().and().csrf().disable().authorizeRequests().anyRequest()
+          .fullyAuthenticated().and().httpBasic().authenticationEntryPoint(authenticationEntryPoint);
     }
 
     @Bean
