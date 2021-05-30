@@ -28,9 +28,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("prodavnica-oie-admin").password(passwordEncoder().encode("GaMV5L/RSmu1ebZJH1b0Zl2R/ygEOlAO3MKRuJ3OTXg="))
-                .authorities("ROLE_ADMIN");
+        http.authorizeRequests().anyRequest()
+          .fullyAuthenticated().and().httpBasic()
+          .authenticationEntryPoint(authenticationEntryPoint).and().csrf().disable();
     }
 
     @Override
