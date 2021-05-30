@@ -28,19 +28,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        http.authorizeRequests().anyRequest()
-          .fullyAuthenticated().and().httpBasic()
-          .authenticationEntryPoint(authenticationEntryPoint).and().csrf().disable();
+        auth.inMemoryAuthentication()
+                .withUser("prodavnica-oie-admin").password(passwordEncoder().encode("GaMV5L/RSmu1ebZJH1b0Zl2R/ygEOlAO3MKRuJ3OTXg="))
+                .authorities("ROLE_ADMIN");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("api/prodavnicaoieadmin/category", "api/prodavnicaoieadmin/product", "api/prodavnicaoieadmin/productReview")
-                .permitAll().antMatchers("/*").permitAll()
-                .antMatchers("/*").fullyAuthenticated()
-                .and().httpBasic()
-                .authenticationEntryPoint(authenticationEntryPoint).and().csrf().disable();
+        http.cors().and().csrf().disable().authorizeRequests().anyRequest()
+          .fullyAuthenticated().and().httpBasic().authenticationEntryPoint(authenticationEntryPoint);
     }
 
     @Bean
