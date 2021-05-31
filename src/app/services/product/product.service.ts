@@ -20,22 +20,22 @@ export class ProductService {
       ("http://localhost:51682/api/prodavnicaoieadmin/product/insert", newProduct, this.authOptionHeader).toPromise();
   }
 
-  public updateProduct(productId: Number, newProductData: Product): Promise<Product> {
+  public updateProduct(productId: number, newProductData: Product): Promise<Product> {
     return this.http.patch<Product>
       ("http://localhost:51682/api/prodavnicaoieadmin/product/update/" + productId, newProductData, this.authOptionHeader).toPromise();
   }
 
-  public deleteProduct(productId: Number): Promise<any> {
+  public deleteProduct(productId: number): Promise<any> {
     return this.http.delete<any>
       ("http://localhost:51682/api/prodavnicaoieadmin/product/delete/" + productId, this.authOptionHeader).toPromise();
   }
 
-  public deleteAllProductsWithinCategory(categoryId: Number): Promise<any> {
+  public deleteAllProductsWithinCategory(categoryId: number): Promise<any> {
     return this.http.delete<any>
       ("http://localhost:51682/api/prodavnicaoieadmin/product/deleteAllWithinCategory/" + categoryId, this.authOptionHeader).toPromise();
   }
 
-  public findProduct(productId: Number): Promise<Product> {
+  public findProduct(productId: number): Promise<Product> {
     return this.http.get<Product>
       ("http://localhost:51682/api/prodavnicaoieadmin/product/find" + productId, this.authOptionHeader).toPromise();
   }
@@ -45,18 +45,18 @@ export class ProductService {
       ("http://localhost:51682/api/prodavnicaoieadmin/product/getTotalNumber", this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumberWithinCategory(categoryId: Number): Promise<Number> {
+  public getTotalNumberWithinCategory(categoryId: number): Promise<Number> {
     return this.http.get<Number>
       ("http://localhost:51682/api/prodavnicaoieadmin/product/getTotalNumber/" + categoryId, this.authOptionHeader).toPromise();
   }
 
   public getListOfProducts(): Promise<Array<Product>> {
     return this.http.get<Array<Product>>
-      ("http://localhost:51621/api/prodavnicaoieadmin/product/listAll", this.authOptionHeader).toPromise();
+      ("http://localhost:51682/api/prodavnicaoieadmin/product/listAll", this.authOptionHeader).toPromise();
   }
 
-  public getListOfProductsWithinCategory(categoryId: Number): Promise<Array<Product>> {
+  public getListOfProductsWithinCategory(categoryId: number): Promise<Array<Product>> {
     return this.http.get<Array<Product>>
-      ("http://localhost:51621/api/prodavnicaoieadmin/product/listAll/" + categoryId, this.authOptionHeader).toPromise();
+      ("http://localhost:51682/api/prodavnicaoieadmin/product/listAll/" + categoryId, this.authOptionHeader).toPromise();
   }
 }

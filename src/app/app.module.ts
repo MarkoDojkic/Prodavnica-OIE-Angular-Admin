@@ -18,6 +18,8 @@ import { CryptoService } from './services/crypto/crypto.service';
 import { ProductsComponent } from './main/products/products.component';
 import { OrdersComponent } from './main/orders/orders.component';
 import { AccountsComponent } from './main/accounts/accounts.component';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { getSerbianPaginatorIntl } from './services/MatPaginatorLocalization';
 
 @NgModule({
   declarations: [
@@ -37,7 +39,7 @@ import { AccountsComponent } from './main/accounts/accounts.component';
   ],
 
   
-  providers: [Title, CryptoService, AccountService, CategoryService,
+  providers: [Title, CryptoService, AccountService, CategoryService, { provide: MatPaginatorIntl, useValue: getSerbianPaginatorIntl() },
     ProductService, ProductReviewService, OrderService, OrderProductService],
   bootstrap: [AppComponent]
 })

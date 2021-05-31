@@ -35,4 +35,8 @@ export class CryptoService {
 
     return decrypted.toString(CryptoJS.enc.Utf8);
   }
+
+  encryptSHA256(encryptionKey: string, encryptedValue: string): string {
+    return CryptoJS.HmacSHA256(encryptedValue, encryptionKey).toString(CryptoJS.enc.Hex);
+  }
 }

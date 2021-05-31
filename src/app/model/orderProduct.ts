@@ -1,5 +1,5 @@
 export class OrderProduct {
-    order_id: Number;
-    product_id: Number;
-    quantaty: Number;
+    order_id: number;
+    product_id: number;
+    quantaty: number;
 }

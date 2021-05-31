@@ -9,7 +9,7 @@ import pr.markodojkic.prodavnicaoieadmin.account.repository.IAccountRepository;
 import java.util.List;
 
 @Service
-public class AccountService implements IAccountService {
+public class  AccountService implements IAccountService {
     @Autowired
     private IAccountRepository accountRepository;
 
