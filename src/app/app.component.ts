@@ -12,8 +12,8 @@ import { CryptoService } from './services/crypto/crypto.service';
 })
 export class AppComponent implements OnInit {
 
-  isDarkMode: Boolean;
-  isLoggedIn: Boolean;
+  isDarkMode: boolean;
+  isLoggedIn: boolean;
   
   constructor(private router: Router,  
     private activatedRoute: ActivatedRoute,  

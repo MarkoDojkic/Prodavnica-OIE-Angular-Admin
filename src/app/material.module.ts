@@ -1,3 +1,4 @@
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -41,7 +42,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
         MatTabsModule,
         MatTableModule,
         MatSortModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatPaginatorModule
     ],
     exports: [
         MatButtonModule,
@@ -63,7 +65,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
         MatTabsModule,
         MatTableModule,
         MatSortModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatPaginatorModule
     ]
 })
 

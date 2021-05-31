@@ -7,8 +7,8 @@ enum Status {
 } */
 
 export class Order {
-    id?: Number;
-    account_id: Number;
+    id?: number;
+    account_id: number;
     shippingMethod: "PERSONAL" | "COURIER" | "POST";
     status: "PENDING" | "CANCELED" | "COMPLETED";
 }

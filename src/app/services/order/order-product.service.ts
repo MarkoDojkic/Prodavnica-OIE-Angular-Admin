@@ -17,72 +17,72 @@ export class OrderProductService {
 
   public addNewOrderProduct(newOrderProduct: OrderProduct): Promise<OrderProduct> {
     return this.http.post<OrderProduct>
-      ("http://localhost:51683/api/prodavnicaoieadmin/orderproduct/insert", newOrderProduct, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/insert", newOrderProduct, this.authOptionHeader).toPromise();
   }
 
-  public updateOrderProduct(orderId: Number, productId: Number, newOrderProductData: OrderProduct): Promise<OrderProduct> {
+  public updateOrderProduct(orderId: number, productId: number, newOrderProductData: OrderProduct): Promise<OrderProduct> {
     return this.http.patch<OrderProduct>
-      ("http://localhost:51683/api/prodavnicaoieadmin/orderproduct/update/" + orderId + "/" + productId, newOrderProductData, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/update/" + orderId + "/" + productId, newOrderProductData, this.authOptionHeader).toPromise();
   }
 
-  public deleteOrderProduct(orderId: Number, productId: Number): Promise<any> {
+  public deleteOrderProduct(orderId: number, productId: number): Promise<any> {
     return this.http.delete<any>
-      ("http://localhost:51683/api/prodavnicaoieadmin/orderproduct/delete/" + orderId + "/" + productId, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/delete/" + orderId + "/" + productId, this.authOptionHeader).toPromise();
   }
 
-  public deleteAllOrderProductsByOrder(orderId: Number): Promise<any> {
+  public deleteAllOrderProductsByOrder(orderId: number): Promise<any> {
     return this.http.delete<any>
-      ("http://localhost:51683/api/prodavnicaoieadmin/orderproduct/deleteAllByOrder/" + orderId, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/deleteAllByOrder/" + orderId, this.authOptionHeader).toPromise();
   }
 
-  public deleteAllOrderProductsByProduct(productId: Number): Promise<any> {
+  public deleteAllOrderProductsByProduct(productId: number): Promise<any> {
     return this.http.delete<any>
-      ("http://localhost:51683/api/prodavnicaoieadmin/orderproduct/deleteAllByProduct/" + productId, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/deleteAllByProduct/" + productId, this.authOptionHeader).toPromise();
   }
 
 
-  public findOrderProduct(orderId: Number, productId: Number): Promise<OrderProduct> {
+  public findOrderProduct(orderId: number, productId: number): Promise<OrderProduct> {
     return this.http.get<OrderProduct>
-      ("http://localhost:51683/api/prodavnicaoieadmin/orderproduct/find/" + orderId + "/" + productId, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/find/" + orderId + "/" + productId, this.authOptionHeader).toPromise();
   }
 
   public getTotalNumber(): Promise<Number> {
     return this.http.get<Number>
-      ("http://localhost:51683/api/prodavnicaoieadmin/orderproduct/getTotalNumber", this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/getTotalNumber", this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumberByOrder(orderId: Number): Promise<Number> {
+  public getTotalNumberByOrder(orderId: number): Promise<Number> {
     return this.http.get<Number>
-      ("http://localhost:51683/api/prodavnicaoieadmin/orderproduct/getTotalNumberByOrder/" + orderId, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/getTotalNumberByOrder/" + orderId, this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumberByProduct(productId: Number): Promise<Number> {
+  public getTotalNumberByProduct(productId: number): Promise<Number> {
     return this.http.get<Number>
-      ("http://localhost:51683/api/prodavnicaoieadmin/orderproduct/getTotalNumberByProduct/" + productId, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/getTotalNumberByProduct/" + productId, this.authOptionHeader).toPromise();
   }
 
-  public getSubtotalByOrder(orderId: Number): Promise<Number> {
+  public getSubtotalByOrder(orderId: number): Promise<Number> {
     return this.http.get<Number>
-      ("http://localhost:51683/api/prodavnicaoieadmin/orderproduct/getSubtotalByOrder/" + orderId, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/getSubtotalByOrder/" + orderId, this.authOptionHeader).toPromise();
   }
 
-  public getSubtotalByProduct(productId: Number): Promise<Number> {
+  public getSubtotalByProduct(productId: number): Promise<Number> {
     return this.http.get<Number>
-      ("http://localhost:51683/api/prodavnicaoieadmin/orderproduct/getSubtotalByProduct/" + productId, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/getSubtotalByProduct/" + productId, this.authOptionHeader).toPromise();
   }
 
   public getListOfOrderedProducts(): Promise<Array<OrderProduct>> {
     return this.http.get<Array<OrderProduct>>
-      ("http://localhost:51621/api/prodavnicaoieadmin/orderproduct/listAll", this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/listAll", this.authOptionHeader).toPromise();
   }
 
-  public getListOfOrderProductsByOrder(orderId: Number): Promise<Array<OrderProduct>> {
+  public getListOfOrderProductsByOrder(orderId: number): Promise<Array<OrderProduct>> {
     return this.http.get<Array<OrderProduct>>
-      ("http://localhost:51621/api/prodavnicaoieadmin/orderproduct/listAllByOrder/" + orderId, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/listAllByOrder/" + orderId, this.authOptionHeader).toPromise();
   }
 
-  public getListOfOrderProductsByProduct(productId: Number): Promise<Array<OrderProduct>> {
+  public getListOfOrderProductsByProduct(productId: number): Promise<Array<OrderProduct>> {
     return this.http.get<Array<OrderProduct>>
-      ("http://localhost:51621/api/prodavnicaoieadmin/orderproduct/listAllByProduct/" + productId, this.authOptionHeader).toPromise();
+      ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/listAllByProduct/" + productId, this.authOptionHeader).toPromise();
   }
 }

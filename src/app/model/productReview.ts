@@ -1,6 +1,6 @@
 export class ProductReview {
-    product_id: Number;
-    account_id: Number;
-    comment: String;
-    review: String;
+    product_id: number;
+    account_id: number;
+    comment: string;
+    review: string;
 }

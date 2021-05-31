@@ -20,17 +20,17 @@ export class CategoryService {
       ("http://localhost:51682/api/prodavnicaoieadmin/category/insert", newCategory, this.authOptionHeader).toPromise();
   }
 
-  public updateCategory(categoryId: Number, newCategoryData: Category): Promise<Category> {
+  public updateCategory(categoryId: number, newCategoryData: Category): Promise<Category> {
     return this.http.patch<Category>
       ("http://localhost:51682/api/prodavnicaoieadmin/category/update/" + categoryId, newCategoryData, this.authOptionHeader).toPromise();
   }
 
-  public deleteCategory(categoryId: Number): Promise<any> {
+  public deleteCategory(categoryId: number): Promise<any> {
     return this.http.delete<any>
       ("http://localhost:51682/api/prodavnicaoieadmin/category/delete/" + categoryId, this.authOptionHeader).toPromise();
   }
 
-  public findCategory(categoryId: Number): Promise<Category> {
+  public findCategory(categoryId: number): Promise<Category> {
     return this.http.get<Category>
       ("http://localhost:51682/api/prodavnicaoieadmin/category/find" + categoryId, this.authOptionHeader).toPromise();
   }
@@ -42,6 +42,6 @@ export class CategoryService {
 
   public getListOfCategories(): Promise<Array<Category>> {
     return this.http.get<Array<Category>>
-      ("http://localhost:51621/api/prodavnicaoieadmin/category/listAll", this.authOptionHeader).toPromise();
+      ("http://localhost:51682/api/prodavnicaoieadmin/category/listAll", this.authOptionHeader).toPromise();
   }
 }
