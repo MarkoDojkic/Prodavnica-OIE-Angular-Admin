@@ -234,14 +234,14 @@ INSERT INTO `orders` (`order_id`, `account_id`, `shipping_method`, `status`) VAL
 CREATE TABLE `orders_product` (
   `order_id` int(10) UNSIGNED NOT NULL,
   `product_id` int(10) UNSIGNED NOT NULL,
-  `quantaty` int(5) UNSIGNED NOT NULL
+  `quantity` int(5) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Prikaz podataka tabele `orders_product`
 --
 
-INSERT INTO `orders_product` (`order_id`, `product_id`, `quantaty`) VALUES
+INSERT INTO `orders_product` (`order_id`, `product_id`, `quantity`) VALUES
 (1, 298, 15),
 (1, 300, 5),
 (1, 314, 10),
@@ -2146,7 +2146,7 @@ ALTER TABLE `orders`
 -- Indexes for table `orders_product`
 --
 ALTER TABLE `orders_product`
-  ADD UNIQUE KEY `uq_order_id_product_id_quantaty` (`order_id`,`product_id`,`quantaty`),
+  ADD UNIQUE KEY `uq_order_id_product_id_quantity` (`order_id`,`product_id`,`quantity`),
   ADD KEY `order_product_FK` (`product_id`);
 
 --

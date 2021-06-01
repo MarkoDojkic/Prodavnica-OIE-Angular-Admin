@@ -46,18 +46,18 @@ export class ProductReviewService {
       ("http://localhost:51682/api/prodavnicaoieadmin/productReview/find/" + productId + "/" + accountId, this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumber(): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumber(): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51682/api/prodavnicaoieadmin/productReview/getTotalNumber", this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumberByAccount(accountId: number): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumberByAccount(accountId: number): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51682/api/prodavnicaoieadmin/productReview/getTotalNumberByAccount/" + accountId, this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumberByProduct(productId: number): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumberByProduct(productId: number): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51682/api/prodavnicaoieadmin/productReview/getTotalNumberByProduct/" + productId, this.authOptionHeader).toPromise();
   }
 

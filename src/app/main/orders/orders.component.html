@@ -1,1 +1,218 @@
-<p>orders works!</p>
+<mat-tab-group mat-stretch-tabs class="mat-card">
+    <mat-tab label="Измена и приказ проуџбина">
+        <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="2%" class="mat-card">
+            <mat-table [dataSource]="listedOrders" matSort>
+                <ng-container matColumnDef="nameSurname">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 18% !important;">Име и презиме наручиоца</mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <span>{{ element.accountName + " " + element.accountSurname }}</span>
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                </ng-container>
+                <ng-container matColumnDef="shippingMethod">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: -3% !important;">Начин доставе</mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <span *ngIf="!element.isEditing">{{ shippingMethods.get(element.shippingMethod) }}</span>
+                        <span *ngIf="element.isEditing">
+                            <select (change)="element.shippingMethodNew = $event.target.value">
+                                <option *ngFor="let shippingMethod of shippingMethods | keyvalue"
+                                    [value]="shippingMethod.key" [selected]="element.shippingMethodNew === shippingMethod.key"
+                                    > {{ shippingMethod.value }}
+                                </option>
+                            </select>
+                        </span>
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                </ng-container>
+                    <ng-container matColumnDef="status">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 3% !important;">Статус поруџбине</mat-header-cell>
+                        <mat-cell *matCellDef="let element">
+                            <span *ngIf="!element.isEditing">{{ statusOptions.get(element.status) }}</span>
+                            <span *ngIf="element.isEditing">
+                                <select (change)="element.statusNew = $event.target.value">
+                                    <option *ngFor="let status of statusOptions | keyvalue"
+                                        [value]="status.key" [selected]="element.statusNew === status.key"
+                                        > {{ status.value }}
+                                    </option>
+                                </select>
+                            </span>
+                        </mat-cell>
+                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                    </ng-container>
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <button mat-icon-button *ngIf="!element.isEditing" (click)="element.isEditing = true"><mat-icon>edit</mat-icon></button>
+                        <button mat-icon-button *ngIf="element.isEditing" (click)="element.isEditing = false; editOrder(element);"><mat-icon>check_circle</mat-icon></button>
+                        <button mat-icon-button><mat-icon>remove_circle</mat-icon></button>
+                        <button mat-icon-button (click)="showOrderedItems(element.id)"><mat-icon>shopping_basket</mat-icon></button>
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let rows; columns: displayedColumns;"></mat-row>
+            </mat-table>
+            
+            <section fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="6%" fxLayoutGap.lt-sm="3%" fxFlex>
+                <mat-paginator [pageSize]="1" [pageSizeOptions]="pageSizeOptions"></mat-paginator>
+                <section fxLayout="row" fxLayoutAlign="space-evenly center" fxLayoutGap="5%" fxLayoutGap.lt-sm="2%">
+                    <button mat-stroked-button color="primary" (click)="find()">Пронађи поруџбину</button>
+                    <button mat-stroked-button color="primary" (click)="showTotal()">Прикажи укупан број поруџбина</button>
+                    <!-- <button mat-stroked-button color="primary" (click)="showTotalByA()">Прикажи укупан број поруџбина од наручиоца</button>
+                    <button mat-stroked-button color="primary" (click)="showTotalWithSM()">Прикажи укупан број поруџбина са начином доставе</button>
+                    <button mat-stroked-button color="primary" (click)="showTotalWithStatus()">Прикажи укупан број поруџбина са статусом</button> -->
+                    <button mat-stroked-button color="primary" (click)="listAll()">Излистај све поруџбине</button>
+                    <!-- <button mat-stroked-button color="primary" (click)="listAllByA()">Излистај све поруџбине од наручиоца</button>
+                    <button mat-stroked-button color="primary" (click)="listAllWithSM()">Излистај све поруџбине са начином доставе</button>
+                    <button mat-stroked-button color="primary" (click)="listAllWithStatus()">Излистај све поруџбине са статусом</button> -->
+                </section>
+            </section>
+            <section></section> <!-- Blank space -->
+        </div>  
+    </mat-tab>
+
+    <mat-tab label="Додавање нове поруџбине">
+        <!-- <form fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="1.2%" fxLayoutGap.lt-md="2.2%"
+        #form="ngForm" (ngSubmit)="addNewAccount(form)" (ngReset)="form.reset()" class="mat-card"> --> <!-- Class mat-card is used to apply dark mode background and coloring -->
+            <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="5%">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Име</mat-label>
+                    <input type="text" pattern="^[\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+$" ngModel matInput name="name" #nameInput="ngModel" required/>
+                    <mat-hint>пр. Марко</mat-hint>
+                    <mat-error *ngIf="nameInput.hasError('required')">Поље имена не сме бити празно</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Презиме</mat-label>
+                    <input type="text" pattern="^([\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+(\s|\-)?)+$" ngModel matInput name="surname" #surnameInput="ngModel" required/>
+                    <mat-hint>пр. Дојкић или Петровић-Тошић или Fon Nojman</mat-hint> <!-- Patten includes one uppercase succeded with 1+ lowercase letter serbian cyrilic/latin or english -->
+                    <mat-error *ngIf="surnameInput.hasError('required')">Поље презимена не сме бити празно</mat-error>
+                </mat-form-field>
+            </div>
+
+            <div>
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Адреса електронске поште</mat-label>
+                    <input type="email" autocomplete="prodavnica-oie-new-email" pattern="^([a-z0-9_.-]+)@([\da-z.-]+)\.([a-z.]{2,6})$" ngModel matInput name="email" #emailInput="ngModel" required/>
+                    <mat-icon matSuffix>alternate_email</mat-icon>
+                    <mat-hint>пр. marko.dojkic.18@singimail.rs</mat-hint>
+                    <mat-error *ngIf="emailInput.hasError('required')">Поље адресе електронске поште не сме бити празно</mat-error>
+                    <mat-error *ngIf="emailInput.hasError('pattern')">Није исправан формат адресе електронске поште</mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="5%">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Број телефона</mat-label>
+                    <input type="text" pattern="^(0|\+381)(([1-3][0-9])|(230)|(280)|(290)|(390))[0-9]{7}$" ngModel matInput name="phone" #phone="ngModel" [required]="mobilePhone.invalid || mobilePhone.pristine"/>
+                    <mat-icon matSuffix>phone</mat-icon>
+                    <mat-hint>пр. 0111234567 или +381111234567</mat-hint>
+                    <mat-error *ngIf="phone.hasError('required')">Поље фиксног броја телефона не сме бити празно ако није унет број мобилног телефона</mat-error>
+                    <mat-error *ngIf="phone.hasError('pattern')">Није исправан формат фиксног броја телефона</mat-error>
+                </mat-form-field>
+            
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Број мобилног телефона</mat-label>
+                    <input type="text" pattern="^(0|\+381)6[0-69][0-9]{7}$" ngModel matInput name="mobilePhone" #mobilePhone="ngModel" [required]="phone.invalid || phone.pristine"/>
+                    <mat-icon matSuffix>phone</mat-icon>
+                    <mat-hint>пр. 0651234567 или +381651234567</mat-hint>
+                    <mat-error *ngIf="mobilePhone.hasError('required')">Поље мобилног броја телефона не сме бити празно ако није унет број фиксног телефона</mat-error>
+                    <mat-error *ngIf="mobilePhone.hasError('pattern')">Није исправан формат мобилног броја телефона</mat-error>
+                </mat-form-field>
+            </div>
+
+            <!-- <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="5%">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Лозинка</mat-label>
+                    <input type="password" ngModel matInput autocomplete="new-password" name="password" #passwordInput="ngModel" minlength="8" required/>
+                    <mat-icon matSuffix>lock</mat-icon>
+                    <mat-hint>пр. secretPassword123</mat-hint>
+                    <mat-error *ngIf="passwordInput.hasError('required')">Поље лозинке не сме бити празно</mat-error>
+                    <mat-error *ngIf="passwordInput.hasError('minlength')">Лозинка мора садржати минимум 8 карактера</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Понови лозинку</mat-label>
+                    <input type="password" ngModel matInput autocomplete="new-password" name="passwordRepeat" #passwordInputRepeat="ngModel" (ngModelChange)="checkPasswordRepeat(passwordInput, passwordInputRepeat)" required/>
+                    <mat-icon matSuffix>lock</mat-icon>
+                    <mat-hint>Иста лозинка као у пољу поред</mat-hint>
+                    <mat-error *ngIf="passwordInputRepeat.hasError('required')">Поље поновне лозинке не сме бити празно</mat-error>
+                    <mat-error *ngIf="passwordInputRepeat.hasError('matched')">Поље се не подудара са лозинком у пољу поред</mat-error>
+                </mat-form-field>
+            </div>
+ -->
+            <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="5%">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Адреса за доставу</mat-label>
+                    <input type="text" pattern="^([\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+\s)+((BB)|(ББ)|([0-9]+[a-z]?))$" 
+                            ngModel matInput name="deliveryAddress" #deliveryAddressAddress="ngModel" [required]="deliveryAddressPak.invalid || deliveryAddressPak.pristine">
+                    <mat-icon matSuffix>location_on</mat-icon>
+                    <mat-hint>пр. Данијелова 32 или Цара Душана 75d или Вудроа Вилсона ББ</mat-hint>
+                    <mat-error *ngIf="deliveryAddressAddress.hasError('required')">Поље адресе за доставу не сме бити празно уколико ПАК није наведен</mat-error>
+                </mat-form-field>
+                <!-- Checking this group of fields has bugs in some edge cases -->
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Поштански адресни код</mat-label>
+                    <input type="number" pattern="^[0-9]{6}$" ngModel matInput name="deliveryAddressPAK" #deliveryAddressPak="ngModel" [required]="deliveryAddressAddress.invalid || deliveryAddressAddress.pristine"/>
+                    <mat-icon matSuffix>local_post_office</mat-icon>
+                    <mat-hint>пр. 456789</mat-hint>
+                    <mat-error *ngIf="deliveryAddressPak.hasError('required')">Поље ПАК броја не сме бити празно уколико адреса за доставу није наведена</mat-error>
+                </mat-form-field>
+                
+            </div>
+
+            <!-- <section fxLayout="row" fxLayoutGap="10px"> -->
+                <!-- <button type="submit" mat-stroked-button color="primary" [disabled]="!checkRequiredFields(form)">Додај налог</button> --> <!-- Disabled if form is invalid -->
+                <!-- <button type="reset" mat-stroked-button color="warn" [disabled]="form.pristine">Обриши све</button> --> <!-- Disabled if form isn't modified -->
+           <!--  </section> -->
+        <!-- </form> -->
+        <section></section> <!-- Blank space -->
+    </mat-tab>
+</mat-tab-group>
+
+<div style="display: none;" id="orderedProductsDiv">
+    <mat-table [dataSource]="this.listedOrderProdructs" matSort>
+        <ng-container matColumnDef="productName">
+            <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 2% !important;">Назив производа</mat-header-cell>
+            <mat-cell *matCellDef="let productElement">
+                <span>{{ productElement.name }}</span>
+            </mat-cell>
+            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+        </ng-container>
+        <ng-container matColumnDef="productCategory">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Назив категорије производа</mat-header-cell>
+            <mat-cell *matCellDef="let productElement">
+                <span>{{ productElement.category.name }}</span>
+            </mat-cell>
+            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+        </ng-container>
+        <ng-container matColumnDef="orderedQuantity">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Количина</mat-header-cell>
+            <mat-cell *matCellDef="let productElement">
+                <span>{{ productElement.orderedQuantity }}</span>
+            </mat-cell>
+            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+        </ng-container>
+        <ng-container matColumnDef="totalCost">
+            <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-right: -6% !important;">Укупна цена</mat-header-cell>
+            <mat-cell *matCellDef="let productElement">
+                <span>{{ (productElement.orderedQuantity * productElement.price).toLocaleString("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} динара</span>
+            </mat-cell>
+            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let productElement" style="padding-right: 1% !important;">
+                <button mat-icon-button><mat-icon>remove_circle</mat-icon></button>
+            </mat-cell>
+            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+        </ng-container>
+        <ng-container matColumnDef="footer">
+            <mat-footer-cell *matFooterCellDef style="margin-left: 7%;">Укупна цена {{ (subtotalOfOrderedProducts + subtotalOfOrderedProducts/5).toLocaleString("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} динара (са 20% ПДВ)</mat-footer-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumnsOP"></mat-header-row>
+        <mat-row *matRowDef="let rows; columns: displayedColumnsOP;"></mat-row>
+        <mat-footer-row *matFooterRowDef="['footer'];"></mat-footer-row>
+    </mat-table>
+</div>

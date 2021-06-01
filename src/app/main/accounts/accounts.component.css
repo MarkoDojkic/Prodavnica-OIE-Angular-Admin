@@ -6,6 +6,46 @@ mat-table {
     width: 100%;
 }
 
+.mat-column-name {
+    flex: 5;
+}
+
+.mat-column-surname {
+    flex: 5;
+}
+
+.mat-column-email {
+    flex: 12;
+}
+
+.mat-column-password {
+    flex: 5;
+}
+
+.mat-column-phoneNumber {
+    flex: 7;
+}
+
+.mat-column-mobilePhoneNumber {
+    flex: 10;
+}
+
+.mat-column-deliveryAddress {
+    flex: 13;
+}
+
+.mat-column-deliveryAddressPAK {
+    flex: 5;
+}
+
+.mat-column-actions {
+    flex: 3;
+}
+
+.mat-cell > span, input {
+    width: 100%;
+}
+
 form {
     height: 100%;
     overflow-y: hidden;

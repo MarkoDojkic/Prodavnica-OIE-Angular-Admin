@@ -46,28 +46,28 @@ export class OrderProductService {
       ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/find/" + orderId + "/" + productId, this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumber(): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumber(): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/getTotalNumber", this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumberByOrder(orderId: number): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumberByOrder(orderId: number): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/getTotalNumberByOrder/" + orderId, this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumberByProduct(productId: number): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumberByProduct(productId: number): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/getTotalNumberByProduct/" + productId, this.authOptionHeader).toPromise();
   }
 
-  public getSubtotalByOrder(orderId: number): Promise<Number> {
-    return this.http.get<Number>
+  public getSubtotalByOrder(orderId: number): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/getSubtotalByOrder/" + orderId, this.authOptionHeader).toPromise();
   }
 
-  public getSubtotalByProduct(productId: number): Promise<Number> {
-    return this.http.get<Number>
+  public getSubtotalByProduct(productId: number): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51683/api/prodavnicaoieadmin/orderProduct/getSubtotalByProduct/" + productId, this.authOptionHeader).toPromise();
   }
 

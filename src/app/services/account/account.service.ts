@@ -57,8 +57,8 @@ export class AccountService {
       ("http://localhost:51681/api/prodavnicaoieadmin/account/find/" + accountId, this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumber(): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumber(): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51681/api/prodavnicaoieadmin/account/getTotalNumber", this.authOptionHeader).toPromise();
   }
 

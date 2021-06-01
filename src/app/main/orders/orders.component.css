@@ -1,0 +1,62 @@
+.mat-tab-group {
+    text-align: center;
+}
+
+.mat-table {
+    width: 100%;
+}
+
+.mat-column-nameSurname {
+    flex: 50;
+}
+
+.mat-column-shippingMethod {
+    flex: 20;
+}
+
+.mat-column-status {
+    flex: 20;
+}
+
+.mat-column-actions {
+    flex: 10;
+}
+
+.mat-column-productName {
+    flex: 22
+}
+
+.mat-column-productCategory {
+    flex: 34
+}
+
+.mat-column-orderedQuantity {
+    flex: 19
+}
+
+.mat-column-totalCost {
+    flex: 22
+}
+
+.mat-cell > span, input {
+    width: 100%;
+}
+
+form {
+    height: 100%;
+    overflow-y: hidden;
+    padding-top: 5px;
+    padding-bottom: 17px;
+}
+
+form > div {
+    width: 85%;
+}
+
+@media screen and (max-width: 960px) {
+    form {
+        height: 100%;
+        overflow-y: hidden;
+        padding-top: 5px;
+    }
+}

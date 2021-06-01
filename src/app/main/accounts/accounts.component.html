@@ -1,9 +1,9 @@
 <mat-tab-group mat-stretch-tabs class="mat-card">
-    <mat-tab label="Манипулација и приказ корисничких налога">
+    <mat-tab label="Измена и приказ корисничких налога">
         <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="2%" class="mat-card">
             <mat-table [dataSource]="listedAccounts" matSort>
                 <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Име</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 2.5% !important;">Име</mat-header-cell>
                     <mat-cell *matCellDef="let element">
                         <span *ngIf="!element.isEditing">{{ element.name }}</span>
                         <span *ngIf="element.isEditing"><input type="text" matInput [(ngModel)]="element.nameNew" [placeholder]="element.name"/></span>
@@ -11,7 +11,7 @@
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>
                 <ng-container matColumnDef="surname">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Презиме</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: -0.6% !important;">Презиме</mat-header-cell>
                     <mat-cell *matCellDef="let element">
                         <span *ngIf="!element.isEditing">{{ element.surname }}</span>
                         <span *ngIf="element.isEditing"><input type="text" matInput [(ngModel)]="element.surnameNew" [placeholder]="element.surname"/></span>
@@ -19,7 +19,7 @@
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>
                 <ng-container matColumnDef="email">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Е-мајл адреса</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 4.5% !important;">Е-мајл адреса</mat-header-cell>
                     <mat-cell *matCellDef="let element">
                         <span *ngIf="!element.isEditing">{{ element.email }}</span>
                         <span *ngIf="element.isEditing"><input type="email" matInput [(ngModel)]="element.emailNew" [placeholder]="element.email"/></span>
@@ -27,13 +27,13 @@
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>
                 <ng-container matColumnDef="password">
-                    <mat-header-cell *matHeaderCellDef>Лозинка</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef style="margin-left: -4% !important;">Лозинка</mat-header-cell>
                     <mat-cell *matCellDef="let element">
                         <span *ngIf="element.isEditing"><input type="password" matInput [(ngModel)]="element.passwordNew" placeholder="********"/></span>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>
-                <ng-container matColumnDef="phoneNumber">
+                <ng-container matColumnDef="phoneNumber" style="margin-left: 0.5% !important;">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Број телефона</mat-header-cell>
                     <mat-cell *matCellDef="let element">
                         <span *ngIf="!element.isEditing">{{ element.phoneNumber }}</span>
