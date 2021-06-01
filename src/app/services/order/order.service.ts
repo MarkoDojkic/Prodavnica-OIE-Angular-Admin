@@ -74,23 +74,23 @@ export class OrderService {
       ("http://localhost:51683/api/prodavnicaoieadmin/order/find/" + orderId, this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumber(): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumber(): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51683/api/prodavnicaoieadmin/order/getTotalNumber", this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumberFromAccount(accountId: number): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumberFromAccount(accountId: number): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51683/api/prodavnicaoieadmin/order/getTotalNumberFromAccount/" + accountId, this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumberWithShippingMethod(shippingMethod: "PERSONAL" | "COURIER" | "POST"): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumberWithShippingMethod(shippingMethod: "PERSONAL" | "COURIER" | "POST"): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51683/api/prodavnicaoieadmin/order/getTotalNumberWithShippingMethod/" + shippingMethod, this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumberWithStatus(status: "PENDING" | "CANCELED" | "COMPLETED"): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumberWithStatus(status: "PENDING" | "CANCELED" | "COMPLETED"): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51683/api/prodavnicaoieadmin/order/getTotalNumberWithStatus/" + status, this.authOptionHeader).toPromise();
   }
 

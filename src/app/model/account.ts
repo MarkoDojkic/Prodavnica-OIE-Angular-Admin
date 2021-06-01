@@ -18,5 +18,5 @@ export class Account {
     mobilePhoneNumberNew?: string = undefined;
     deliveryAddressNew?: string = undefined;
     deliveryAddressPAKNew?: string = undefined;
-    isEditing?: boolean = undefined;
+    isEditing?: boolean = false;
 }

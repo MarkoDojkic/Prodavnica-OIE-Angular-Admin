@@ -7,4 +7,7 @@ export class Product {
     description: string;
     leftInStock: number;
     price: number;
+
+    //for showing in orders as ordered product
+    orderedQuantity?: number;
 }

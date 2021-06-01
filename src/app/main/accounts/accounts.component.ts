@@ -70,7 +70,7 @@ export class AccountsComponent implements OnInit {
     Object.keys(form.controls).forEach(id => {
       if(form.controls[id].hasError('required')) isAllValid = false;
     });
-    return isAllValid && !form.controls["passwordRepeat"].hasError("matched");
+    return isAllValid && !form.controls["passwordRepeat"]?.hasError("matched");
   }
 
   editAccount(account: Account): void {
@@ -84,6 +84,10 @@ export class AccountsComponent implements OnInit {
     account.deliveryAddress = account.deliveryAddressNew !== undefined && account.deliveryAddressNew.match("^([\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+\s)+((BB)|(ББ)|([0-9]+[a-z]?))$") ? account.deliveryAddressNew : account.deliveryAddress;
     account.deliveryAddressPAK = account.deliveryAddressPAKNew !== undefined && account.deliveryAddressPAKNew.match("^[0-9]{6}$") ? account.deliveryAddressPAKNew : account.deliveryAddressPAK;
     
+    if (account.nameNew === undefined && account.surnameNew === undefined && account.passwordNew === undefined
+      && account.emailNew === undefined && account.phoneNumberNew === undefined && account.mobilePhoneNumberNew === undefined
+      && account.deliveryAddressNew === undefined && account.deliveryAddressPAKNew === undefined) return;
+    //If nothing is changed stop here, otherwise clear all field and procceed to update data  
     account.nameNew = undefined; 
     account.surnameNew = undefined;
     account.passwordNew = undefined;
@@ -92,7 +96,6 @@ export class AccountsComponent implements OnInit {
     account.mobilePhoneNumberNew = undefined;
     account.deliveryAddressNew = undefined;
     account.deliveryAddressPAKNew = undefined;
-    account.isEditing = undefined;
 
     this.accountService.updateAccount(account.id, account).then(response => {
       Swal.fire({
@@ -119,7 +122,7 @@ export class AccountsComponent implements OnInit {
   deleteAccount(accountId: number): void {
     Swal.fire({
       title: "Потврда уклањања корисничког налога са ИД-јем " + accountId,
-      text: "Да ли сте сигурни да желите да уклнотие овај налог? Овим ће бити обрисани и сви подаци о поруџбинама овог корисника!",
+      text: "Да ли сте сигурни да желите да уклоните овај налог? Овим ће бити обрисани и сви подаци о поруџбинама и рецензијама овог корисника!",
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Да",

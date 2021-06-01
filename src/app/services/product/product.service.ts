@@ -37,16 +37,16 @@ export class ProductService {
 
   public findProduct(productId: number): Promise<Product> {
     return this.http.get<Product>
-      ("http://localhost:51682/api/prodavnicaoieadmin/product/find" + productId, this.authOptionHeader).toPromise();
+      ("http://localhost:51682/api/prodavnicaoieadmin/product/find/" + productId, this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumber(): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumber(): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51682/api/prodavnicaoieadmin/product/getTotalNumber", this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumberWithinCategory(categoryId: number): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumberWithinCategory(categoryId: number): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51682/api/prodavnicaoieadmin/product/getTotalNumber/" + categoryId, this.authOptionHeader).toPromise();
   }
 

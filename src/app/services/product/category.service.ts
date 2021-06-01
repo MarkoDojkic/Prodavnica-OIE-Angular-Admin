@@ -35,8 +35,8 @@ export class CategoryService {
       ("http://localhost:51682/api/prodavnicaoieadmin/category/find" + categoryId, this.authOptionHeader).toPromise();
   }
 
-  public getTotalNumber(): Promise<Number> {
-    return this.http.get<Number>
+  public getTotalNumber(): Promise<number> {
+    return this.http.get<number>
       ("http://localhost:51682/api/prodavnicaoieadmin/category/getTotalNumber", this.authOptionHeader).toPromise();
   }
 
