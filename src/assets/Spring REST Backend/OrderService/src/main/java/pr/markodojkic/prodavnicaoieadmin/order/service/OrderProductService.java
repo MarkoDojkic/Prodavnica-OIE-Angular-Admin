@@ -27,7 +27,7 @@ public class OrderProductService implements IOrderProductService {
         /* Order and Product ids are part of composite key as JPA primary keys and thus cannot be altered, although database permits that
         if(newOrderProductData.getOrder_id() > 0) orderProduct.setOrder_id(newOrderProductData.getOrder_id());
         if(newOrderProductData.getProduct_id() > 0) orderProduct.setProduct_id(newOrderProductData.getProduct_id());*/
-        if(newOrderProductData.getQuantaty() > 0) orderProduct.setQuantaty(newOrderProductData.getQuantaty());
+        if(newOrderProductData.getQuantity() > 0) orderProduct.setQuantity(newOrderProductData.getQuantity());
 
         return this.addNewOrderProduct(orderProduct);
     }

@@ -6,10 +6,10 @@ import pr.markodojkic.prodavnicaoieadmin.order.entity.OrderProduct;
 import pr.markodojkic.prodavnicaoieadmin.order.model.OrderProductCompositePK;
 
 public interface IOrderProductRepository extends JpaRepository<OrderProduct, OrderProductCompositePK> {
-  @Query(value = "SELECT SUM(op.quantaty * p.price) totalPrice FROM prodavnicaOIEAngular.orders_product op \n" +
+  @Query(value = "SELECT SUM(op.quantity * p.price) totalPrice FROM prodavnicaOIEAngular.orders_product op \n" +
     "INNER JOIN prodavnicaOIEAngular.product p ON op.product_id = p.product_id WHERE op.order_id = ?1", nativeQuery = true)
   int getSubtotalByOrder(int order_id);
-  @Query(value = "SELECT SUM(op.quantaty * p.price) totalPrice FROM prodavnicaOIEAngular.orders_product op \n" +
+  @Query(value = "SELECT SUM(op.quantity * p.price) totalPrice FROM prodavnicaOIEAngular.orders_product op \n" +
     "INNER JOIN prodavnicaOIEAngular.product p ON op.product_id = p.product_id WHERE op.product_id = ?1", nativeQuery = true)
   int getSubtotalByProduct(int product_id);
 }

@@ -68,7 +68,7 @@
                     <mat-cell *matCellDef="let element">
                         <button mat-icon-button *ngIf="!element.isEditing" (click)="element.isEditing = true"><mat-icon>edit</mat-icon></button>
                         <button mat-icon-button *ngIf="element.isEditing" (click)="element.isEditing = false; editAccount(element)"><mat-icon>check_circle</mat-icon></button>
-                        <button mat-icon-button (click)="deleteAccount(element.id)"><mat-icon>remove_circle</mat-icon></button>
+                        <button mat-icon-button (click)="deleteAccount(element.id)"><mat-icon>delete_forever</mat-icon></button>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>

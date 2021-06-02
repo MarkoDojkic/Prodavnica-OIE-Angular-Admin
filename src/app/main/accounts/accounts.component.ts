@@ -51,7 +51,7 @@ export class AccountsComponent implements OnInit {
       console.log(reject);
       Swal.fire({
         title: "Грешка приликом додавања новог корисника",
-        text: "Није могуће додати кориснички налог. Проверите да ли је Spring REST сервис активан, а ако јесте онда се неки подаци већ постоје у бази за други или исти налог.",
+        text: "Није могуће додати кориснички налог. Проверите да ли је Spring REST сервис активан, а ако јесте онда се неки подаци већ налазе у бази за други или исти налог.",
         icon: "error",
         showCancelButton: false,
         confirmButtonText: "У реду",
@@ -75,37 +75,41 @@ export class AccountsComponent implements OnInit {
 
   editAccount(account: Account): void {
 
+    account.passwordNew = account.passwordNew !== undefined && account.passwordNew.length >= 8 ? this.cs.encryptSHA256("8fefa3caea331537a156a114299d5b60ff96a9c5e2e34b824ccfc4fb3d33e3bc6cc34486365e15c4885870da648505e7cc9f957b7383e2a421e766c113f47f0c", account.passwordNew) : undefined;
+
     account.name = account.nameNew !== undefined && account.nameNew.match("^[\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+$") ? account.nameNew : account.name;
     account.surname = account.surnameNew !== undefined && account.surnameNew.match("^([\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+(\s|\-)?)+$") ? account.surnameNew : account.surname;
     account.email  = account.emailNew !== undefined && account.emailNew.match("^([a-z0-9_.-]+)@([\da-z.-]+)\.([a-z.]{2,6})$") ? account.emailNew : account.email;
-    account.password_hash = account.passwordNew !== undefined && account.passwordNew.length > 8 ? this.cs.encryptSHA256("8fefa3caea331537a156a114299d5b60ff96a9c5e2e34b824ccfc4fb3d33e3bc6cc34486365e15c4885870da648505e7cc9f957b7383e2a421e766c113f47f0c", account.passwordNew) : account.password_hash; 
+    account.password_hash = account.passwordNew !== undefined ? account.passwordNew : account.password_hash; 
     account.phoneNumber = account.phoneNumberNew !== undefined && account.phoneNumberNew.match("^(0|\\+381)(([1-3][0-9])|(230)|(280)|(290)|(390))[0-9]{7}$") ? account.phoneNumberNew : account.phoneNumber; 
     account.mobilePhoneNumber = account.mobilePhoneNumberNew !== undefined && account.mobilePhoneNumberNew.match("^(0|\\+381)6[0-69][0-9]{7}$") ? account.mobilePhoneNumberNew : account.mobilePhoneNumber;
     account.deliveryAddress = account.deliveryAddressNew !== undefined && account.deliveryAddressNew.match("^([\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+\s)+((BB)|(ББ)|([0-9]+[a-z]?))$") ? account.deliveryAddressNew : account.deliveryAddress;
     account.deliveryAddressPAK = account.deliveryAddressPAKNew !== undefined && account.deliveryAddressPAKNew.match("^[0-9]{6}$") ? account.deliveryAddressPAKNew : account.deliveryAddressPAK;
     
-    if (account.nameNew === undefined && account.surnameNew === undefined && account.passwordNew === undefined
-      && account.emailNew === undefined && account.phoneNumberNew === undefined && account.mobilePhoneNumberNew === undefined
-      && account.deliveryAddressNew === undefined && account.deliveryAddressPAKNew === undefined) return;
-    //If nothing is changed stop here, otherwise clear all field and procceed to update data  
-    account.nameNew = undefined; 
-    account.surnameNew = undefined;
-    account.passwordNew = undefined;
-    account.emailNew = undefined;
-    account.phoneNumberNew = undefined;
-    account.mobilePhoneNumberNew = undefined;
-    account.deliveryAddressNew = undefined;
-    account.deliveryAddressPAKNew = undefined;
+    if (account.name !== account.nameNew && account.surname !== account.surnameNew
+      && account.email !== account.emailNew && account.passwordNew === undefined 
+      && account.phoneNumber !== account.phoneNumberNew && account.mobilePhoneNumber !== account.mobilePhoneNumberNew
+      && account.deliveryAddress !== account.deliveryAddressNew && account.deliveryAddressPAK !== account.deliveryAddressPAKNew)
+      return; //If nothing is changed stop here, otherwise clear all fields and procceed to update data
+    delete account.nameNew;
+    delete account.surnameNew;
+    delete account.passwordNew;
+    delete account.emailNew;
+    delete account.phoneNumberNew;
+    delete account.mobilePhoneNumberNew;
+    delete account.deliveryAddressNew;
+    delete account.deliveryAddressPAKNew;
 
     this.accountService.updateAccount(account.id, account).then(response => {
-      Swal.fire({
-        title: "Успешно промењен налог " + account.id,
-        text: JSON.stringify(response),
-        icon: "success",
-        showCancelButton: false,
-        confirmButtonText: "У реду",
-        allowOutsideClick: false
-      });
+      if (response !== null) {
+        Swal.fire({
+          title: "Успешно промењен налог " + account.id,
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonText: "У реду",
+          allowOutsideClick: false
+        }).then(() => this.listAll());
+      }
     }, reject => {
       console.log(reject);
       Swal.fire({
@@ -122,7 +126,7 @@ export class AccountsComponent implements OnInit {
   deleteAccount(accountId: number): void {
     Swal.fire({
       title: "Потврда уклањања корисничког налога са ИД-јем " + accountId,
-      text: "Да ли сте сигурни да желите да уклоните овај налог? Овим ће бити обрисани и сви подаци о поруџбинама и рецензијама овог корисника!",
+      text: "Да ли сте сигурни да желите да уклоните овај налог? Овим ће бити обрисани и сви подаци о поруџбинама и рецензијама овог корисника.",
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Да",
@@ -135,7 +139,7 @@ export class AccountsComponent implements OnInit {
         this.accountService.deleteAccount(accountId).then(() => { //Response will be null
           Swal.fire({
             title: "Успешно уклоњен кориснички налог са ИД-јем " + accountId,
-            text: "Заједно са тим су уклоњене све информације о корисниковим поруџбинама из базе",
+            text: "Заједно са тим су уклоњене све информације о корисниковим поруџбинама из базе.",
             icon: "success",
             showCancelButton: false,
             confirmButtonText: "У реду",
@@ -147,7 +151,7 @@ export class AccountsComponent implements OnInit {
           console.log(reject);
           Swal.fire({
             title: "Грешка приликом уклањања корисника са ИД-јем " + accountId,
-            text: "Корисник са ИД-јем " + accountId + " не може бити уклоњен. Проверите да ли су сви потребни Spring REST сервиси активани.",
+            text: "Корисник са ИД-јем " + accountId + " не може бити уклоњен. Проверите да ли су сви потребни Spring REST сервиси активни.",
             icon: "warning",
             showCancelButton: false,
             confirmButtonText: "У реду",
@@ -161,54 +165,64 @@ export class AccountsComponent implements OnInit {
   find(): void {
     Swal.fire({
       title: "Претрага корисничких налога",
-      html: "<html><body><span>Унесите ИД корисничког налога:</span><br><input type='number' id='prodavnica-oie-admin-accountId' min='1' class='swal2-input'></body></html>",
-      icon: "question",
+      html: `<html><body>
+              <span>Унесите ИД корисничког налога:</span><br>
+              <input type='number' id='prodavnica-oie-admin-accountId' min='1'
+              class='swal2-input'>
+            </body></html>`,
+      icon: "question", /* input:"number" is not used because of css style */
       showCancelButton: true,
       confirmButtonText: "Пронађи",
       confirmButtonColor: "green",
       cancelButtonText: "Одустани",
       cancelButtonColor: "red",
       allowOutsideClick: false
-    }).then(() => {
-      var accountId = (<HTMLInputElement>Swal.getPopup().querySelector("#prodavnica-oie-admin-accountId")).value;
-      if (accountId === "") accountId = "-1";
-      this.accountService.findAccount(parseInt(accountId)).then(response => {
-        if (response != null)
-          Swal.fire({
-            title: "Пронађени подаци корисника са ИД-јем " + accountId,
-            text: JSON.stringify(response),
-            icon: "success",
-            showCancelButton: false,
-            confirmButtonText: "У реду",
-            allowOutsideClick: false
-          });
-        else 
+    }).then(response => {
+      if (response.isConfirmed) {
+        var accountId = (<HTMLInputElement>Swal.getPopup().querySelector("#prodavnica-oie-admin-accountId")).value;
+        if (accountId === "") accountId = "-1";
+        this.accountService.findAccount(parseInt(accountId)).then(response => {
+          if (response != null)
+            Swal.fire({
+              title: "Пронађени су подаци корисника са ИД-јем " + accountId,
+              text: JSON.stringify(response),
+              icon: "success",
+              showCancelButton: false,
+              confirmButtonText: "У реду",
+              allowOutsideClick: false
+            });
+          else
+            Swal.fire({
+              title: "Грешка приликом проналажења корисника",
+              text: "Корисник са ИД-јем " + accountId + " се не налази у бази података!",
+              icon: "warning",
+              showCancelButton: false,
+              confirmButtonText: "У реду",
+              allowOutsideClick: false
+            });
+        }, reject => {
+          console.log(reject);
           Swal.fire({
             title: "Грешка приликом проналажења корисника",
-            text: "Корисник са ИД-јем " + accountId + " се не налази у бази података!",
-            icon: "warning",
+            text: "Није могуће пронађи кориснички налог. Проверите да ли је Spring REST сервис активан.",
+            icon: "error",
             showCancelButton: false,
             confirmButtonText: "У реду",
             allowOutsideClick: false
           });
-      }, reject => {
-        console.log(reject);
-        Swal.fire({
-          title: "Грешка приликом проналажења корисника",
-          text: "Није могуће пронађи кориснички налог. Проверите да ли је Spring REST сервис активан.",
-          icon: "error",
-          showCancelButton: false,
-          confirmButtonText: "У реду",
-          allowOutsideClick: false
         });
-      })
+      }
     });
   }
 
   showTotal(): void {
     this.accountService.getTotalNumber().then(response => {
+      var message: string = "";
+      if (response === 0) message = "У бази се не налази ниједан кориснички налог";
+      else message = "Укупан број корисничких налога је " + response;
+
       Swal.fire({
-        title: "Укупан број корисничких налога је " + response,
+        title: message,
         icon: "info",
         showCancelButton: false,
         confirmButtonText: "У реду",
@@ -218,7 +232,7 @@ export class AccountsComponent implements OnInit {
       console.log(reject);
       Swal.fire({
         title: "Грешка приликом преузимања података",
-        text: "Није могуће преузети број корисничких налога. Проверите да ли је Spring REST сервис активан.",
+        text: "Није могуће преузети укупан број корисничких налога. Проверите да ли је Spring REST сервис активан.",
         icon: "error",
         showCancelButton: false,
         confirmButtonText: "У реду",
@@ -234,6 +248,18 @@ export class AccountsComponent implements OnInit {
       this.listedAccounts.paginator = this.paginator;
 
       this.pageSizeOptionsSet.clear();
+      
+      if (this.listedAccounts.data.length === 0) { //No accounts found
+        Swal.fire({
+          title: "Није пронађен ниједан кориснички налог у бази",
+          icon: "info",
+          showCancelButton: false,
+          confirmButtonText: "У реду",
+          allowOutsideClick: false
+        });
+        return;
+      }
+
       this.pageSizeOptionsSet.add(1);
       this.pageSizeOptionsSet.add(Math.floor(this.listedAccounts.data.length / 2));
       this.pageSizeOptionsSet.add(Math.floor(this.listedAccounts.data.length / 5));
@@ -241,6 +267,14 @@ export class AccountsComponent implements OnInit {
       this.pageSizeOptionsSet.add(Math.floor(this.listedAccounts.data.length / 10));
       this.pageSizeOptionsSet.add(this.listedAccounts.data.length);
       this.pageSizeOptions = Array.from(this.pageSizeOptionsSet);
+
+      Swal.fire({
+        title: "Подаци о корисничким налозима су успешно учитани",
+        icon: "success",
+        showCancelButton: false,
+        confirmButtonText: "У реду",
+        allowOutsideClick: false
+      });
     }, reject => {
       console.log(reject);
       Swal.fire({
