@@ -12,15 +12,15 @@ public class OrderProduct {
     private int order_id;
     @Id
     private int product_id;
-    @Column(name = "quantaty")
-    private int quantaty;
+    @Column(name = "quantity")
+    private int quantity;
 
     public OrderProduct() { }
 
-    public OrderProduct(int order_id, int product_id, int quantaty) {
+    public OrderProduct(int order_id, int product_id, int quantity) {
         this.order_id = order_id;
         this.product_id = product_id;
-        this.quantaty = quantaty;
+        this.quantity = quantity;
     }
 
     public int getOrder_id() {
@@ -39,11 +39,11 @@ public class OrderProduct {
         this.product_id = product_id;
     }
 
-    public int getQuantaty() {
-        return quantaty;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setQuantaty(int quantaty) {
-        this.quantaty = quantaty;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

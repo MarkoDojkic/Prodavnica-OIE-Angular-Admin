@@ -50,7 +50,11 @@ export class AppComponent implements OnInit {
   promptAdminLogin(): void {
     Swal.fire({
       title: "Нисте улоговани!",
-      html: "<html><body><span>Улогујте се уносом админ лозинке</span><br><input type='password' id='prodavnica-oie-admin-password' class='swal2-input'></body></html>",
+      html: `<html><body>
+              <span>Улогујте се уносом админ лозинке</span><br>
+              <input type='password' id='prodavnica-oie-admin-password'
+              class='swal2-input'>
+            </body></html>`,
       icon: "warning",
       showCancelButton: false,
       confirmButtonText: "Улогуј ме",

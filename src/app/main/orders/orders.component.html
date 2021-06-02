@@ -3,7 +3,7 @@
         <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="2%" class="mat-card">
             <mat-table [dataSource]="listedOrders" matSort>
                 <ng-container matColumnDef="nameSurname">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 18% !important;">Име и презиме наручиоца</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef style="margin-left: 18% !important;">Име и презиме наручиоца</mat-header-cell>
                     <mat-cell *matCellDef="let element">
                         <span>{{ element.accountName + " " + element.accountSurname }}</span>
                     </mat-cell>
@@ -42,9 +42,9 @@
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef></mat-header-cell>
                     <mat-cell *matCellDef="let element">
-                        <button mat-icon-button *ngIf="!element.isEditing" (click)="element.isEditing = true"><mat-icon>edit</mat-icon></button>
+                        <button mat-icon-button *ngIf="!element.isEditing && element.status !== 'COMPLETED'" (click)="element.isEditing = true"><mat-icon>edit</mat-icon></button>
                         <button mat-icon-button *ngIf="element.isEditing" (click)="element.isEditing = false; editOrder(element);"><mat-icon>check_circle</mat-icon></button>
-                        <button mat-icon-button><mat-icon>remove_circle</mat-icon></button>
+                        <button mat-icon-button (click)="deleteOrder(element.id)"><mat-icon>delete_forever</mat-icon></button>
                         <button mat-icon-button (click)="showOrderedItems(element.id)"><mat-icon>shopping_basket</mat-icon></button>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -59,13 +59,8 @@
                 <section fxLayout="row" fxLayoutAlign="space-evenly center" fxLayoutGap="5%" fxLayoutGap.lt-sm="2%">
                     <button mat-stroked-button color="primary" (click)="find()">Пронађи поруџбину</button>
                     <button mat-stroked-button color="primary" (click)="showTotal()">Прикажи укупан број поруџбина</button>
-                    <!-- <button mat-stroked-button color="primary" (click)="showTotalByA()">Прикажи укупан број поруџбина од наручиоца</button>
-                    <button mat-stroked-button color="primary" (click)="showTotalWithSM()">Прикажи укупан број поруџбина са начином доставе</button>
-                    <button mat-stroked-button color="primary" (click)="showTotalWithStatus()">Прикажи укупан број поруџбина са статусом</button> -->
-                    <button mat-stroked-button color="primary" (click)="listAll()">Излистај све поруџбине</button>
-                    <!-- <button mat-stroked-button color="primary" (click)="listAllByA()">Излистај све поруџбине од наручиоца</button>
-                    <button mat-stroked-button color="primary" (click)="listAllWithSM()">Излистај све поруџбине са начином доставе</button>
-                    <button mat-stroked-button color="primary" (click)="listAllWithStatus()">Излистај све поруџбине са статусом</button> -->
+                    <button mat-stroked-button color="primary" (click)="showTotalOfOrderedProducts()">Прикажи укупан број поручених производа</button>
+                    <button mat-stroked-button color="primary" (click)="listOrders()">Излистај све поруџбине</button>
                 </section>
             </section>
             <section></section> <!-- Blank space -->
@@ -172,39 +167,32 @@
 </mat-tab-group>
 
 <div style="display: none;" id="orderedProductsDiv">
-    <mat-table [dataSource]="this.listedOrderProdructs" matSort>
+    <mat-table [dataSource]="this.listedOrderProdructs">
         <ng-container matColumnDef="productName">
-            <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 2% !important;">Назив производа</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef style="margin-left: -1% !important;">Назив производа</mat-header-cell>
             <mat-cell *matCellDef="let productElement">
                 <span>{{ productElement.name }}</span>
             </mat-cell>
             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
         </ng-container>
         <ng-container matColumnDef="productCategory">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Назив категорије производа</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef style="margin-left: -2% !important;">Назив категорије производа</mat-header-cell>
             <mat-cell *matCellDef="let productElement">
                 <span>{{ productElement.category.name }}</span>
             </mat-cell>
             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
         </ng-container>
         <ng-container matColumnDef="orderedQuantity">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Количина</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>Количина</mat-header-cell>
             <mat-cell *matCellDef="let productElement">
                 <span>{{ productElement.orderedQuantity }}</span>
             </mat-cell>
             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
         </ng-container>
         <ng-container matColumnDef="totalCost">
-            <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-right: -6% !important;">Укупна цена</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef style="margin-right: -7% !important;">Укупна цена</mat-header-cell>
             <mat-cell *matCellDef="let productElement">
                 <span>{{ (productElement.orderedQuantity * productElement.price).toLocaleString("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} динара</span>
-            </mat-cell>
-            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef></mat-header-cell>
-            <mat-cell *matCellDef="let productElement" style="padding-right: 1% !important;">
-                <button mat-icon-button><mat-icon>remove_circle</mat-icon></button>
             </mat-cell>
             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
         </ng-container>

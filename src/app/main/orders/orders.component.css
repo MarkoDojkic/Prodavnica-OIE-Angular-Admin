@@ -23,19 +23,19 @@
 }
 
 .mat-column-productName {
-    flex: 22
+    flex: 25
 }
 
 .mat-column-productCategory {
-    flex: 34
+    flex: 45
 }
 
 .mat-column-orderedQuantity {
-    flex: 19
+    flex: 25
 }
 
 .mat-column-totalCost {
-    flex: 22
+    flex: 35
 }
 
 .mat-cell > span, input {

@@ -20,6 +20,7 @@ import { MatTreeModule } from "@angular/material/tree";
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatChipsModule } from '@angular/material/chips';
 
 @NgModule({
     imports: [
@@ -43,7 +44,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
         MatTableModule,
         MatSortModule,
         MatSnackBarModule,
-        MatPaginatorModule
+        MatPaginatorModule,
+        MatChipsModule
     ],
     exports: [
         MatButtonModule,
@@ -66,7 +68,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
         MatTableModule,
         MatSortModule,
         MatSnackBarModule,
-        MatPaginatorModule
+        MatPaginatorModule,
+        MatChipsModule
     ]
 })
 
