@@ -49,8 +49,8 @@ form {
     padding-bottom: 17px;
 }
 
-form > div {
-    width: 85%;
+mat-form-field {
+    width: 68%;
 }
 
 @media screen and (max-width: 960px) {

@@ -8,7 +8,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './material.module';
 import { RoutingModule } from './routing.module';
 import { HttpClientModule } from '@angular/common/http';
@@ -35,7 +35,8 @@ import { getSerbianPaginatorIntl } from './services/MatPaginatorLocalization';
     BrowserAnimationsModule,
     FlexLayoutModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
 
   
