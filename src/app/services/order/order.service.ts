@@ -36,9 +36,13 @@ export class OrderService {
 
   public deleteOrder(orderId: number): Promise<any> {
     return this.orderProductService.deleteAllOrderProductsByOrder(orderId).then(() => {
-      return this.http.delete<any>
-        ("http://localhost:51683/api/prodavnicaoieadmin/order/delete/" + orderId, { headers: this.headers }).toPromise()
+      return this.deleteOrderOnly(orderId);
     });
+  }
+
+  public deleteOrderOnly(orderId: number): Promise<any> {
+    return this.http.delete<any>
+      ("http://localhost:51683/api/prodavnicaoieadmin/order/delete/" + orderId, { headers: this.headers }).toPromise();
   }
 
   public deleteAllOrdersFromAccount(accountId: number): Promise<any> {
