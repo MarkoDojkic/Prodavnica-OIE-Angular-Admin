@@ -38,7 +38,6 @@ export class OrdersComponent implements OnInit {
   filteredProductNames: Observable<Array<string>> = new Observable<Array<string>>(); /* For autocomplete values */
   productsPurchased: Array<Product> = new Array<Product>();
   productInputControl = new FormControl();
-  separatorKeysCodes: number[] = [ENTER, COMMA];
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -47,8 +46,6 @@ export class OrdersComponent implements OnInit {
   constructor(private cs: CryptoService, private accountService: AccountService, private productService: ProductService,
     private orderService: OrderService, private orderProductService: OrderProductService) { }
 
-  /* Known bug: When selecting first item in autocomplete it can only be selected one time */
-  
   ngOnInit(): void {
     this.accountService.getListOfAccounts().then(response => { this.accounts = response });
     this.productService.getListOfProducts().then(response => {
@@ -261,15 +258,28 @@ export class OrdersComponent implements OnInit {
           response.value.forEach(productId => {
             this.orderProductService.deleteOrderProduct(orderId, productId);
           });
-
+          
           setTimeout(() => {
-            Swal.fire({
-              title: "Уклањање изабраних производа успешно",
-              icon: "success",
-              showCancelButton: false,
-              confirmButtonText: "У реду",
-              allowOutsideClick: false
-            });
+            if (response.value.length === j) { //All products deleted
+              this.orderService.deleteOrderOnly(orderId).then(() => {
+                Swal.fire({
+                  title: "Поруџбина уклоњена јер су сви њени прозивди уклоњени",
+                  icon: "info",
+                  showCancelButton: false,
+                  confirmButtonText: "У реду",
+                  allowOutsideClick: false
+                }).then(() => this.listOrders());
+              });
+            }
+            else {
+              Swal.fire({
+                title: "Уклањање изабраних производа успешно",
+                icon: "success",
+                showCancelButton: false,
+                confirmButtonText: "У реду",
+                allowOutsideClick: false
+              });
+            }
           }, 2000);
         });
       }, 1000);
