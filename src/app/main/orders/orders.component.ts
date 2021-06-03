@@ -1,15 +1,21 @@
+import { Account } from './../../model/account';
 import { ProductService } from './../../services/product/product.service';
 import { Product } from 'src/app/model/product';
 import { OrderProductService } from './../../services/order/order-product.service';
 import { OrderService } from './../../services/order/order.service';
 import { Order } from './../../model/order';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AccountService } from 'src/app/services/account/account.service';
 import { CryptoService } from 'src/app/services/crypto/crypto.service';
 import Swal from 'sweetalert2';
+import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import { Observable } from 'rxjs';
+import { startWith, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-orders',
@@ -20,21 +26,111 @@ export class OrdersComponent implements OnInit {
 
   listedOrders = new MatTableDataSource<Order>();
   listedOrderProdructs = new MatTableDataSource<Product>();
-  shippingMethods: Map<string, string> = new Map<string, string>([["PERSONAL","Лично преузимање"],["COURIER","Курирска служба"],["POST","Пошта"]]);
+  shippingMethods: Map<string, string> = new Map<string, string>([["PERSONAL", "Лично преузимање"], ["COURIER", "Курирска служба"], ["POST", "Пошта"]]);
   statusOptions: Map<string, string> = new Map<string, string>([["PENDING", "Текућа"], ["CANCELED", "Отказана"], ["COMPLETED", "Завршена"]]);
   displayedColumns: Array<string> = ["nameSurname", "shippingMethod", "status", "actions"];
-  displayedColumnsOP: Array<string> = ["productName","productCategory","orderedQuantity","totalCost"];
+  displayedColumnsOP: Array<string> = ["productName", "productCategory", "orderedQuantity", "totalCost"];
   pageSizeOptionsSet: Set<number> = new Set<number>();
   pageSizeOptions: Array<number>;
   subtotalOfOrderedProducts: number;
+  accounts: Array<Account>;
+  products: Array<Product>;
+  filteredProductNames: Observable<Array<string>> = new Observable<Array<string>>(); /* For autocomplete values */
+  productsPurchased: Array<Product> = new Array<Product>();
+  productInputControl = new FormControl();
+  separatorKeysCodes: number[] = [ENTER, COMMA];
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild("productInput") productInput: ElementRef<HTMLInputElement>;
 
   constructor(private cs: CryptoService, private accountService: AccountService, private productService: ProductService,
     private orderService: OrderService, private orderProductService: OrderProductService) { }
 
-  ngOnInit(): void { }
+  /* Known bug: When selecting first item in autocomplete it can only be selected one time */
+  
+  ngOnInit(): void {
+    this.accountService.getListOfAccounts().then(response => { this.accounts = response });
+    this.productService.getListOfProducts().then(response => {
+      this.products = response;
+      this.filteredProductNames = this.productInputControl.valueChanges.pipe(startWith(null), map(
+        (name: string | null) => name ? this.products.map(product => product.name).filter
+          (productName => productName.toLowerCase().indexOf(name.toLowerCase()) === 0)
+          : this.products.map(product => product.name).slice())
+      );
+    });
+  }
+
+  checkRequiredFields(form: FormGroup): boolean {
+    var isAllValid: boolean = true;
+    Object.keys(form.controls).forEach(id => {
+      if (form.controls[id].hasError('required')) isAllValid = false;
+    });
+    return isAllValid;
+  }
+
+  addSelectedProduct(event: MatAutocompleteSelectedEvent): void {
+    var selectedProduct: Product = this.productsPurchased.find(p => p.name === event.option.viewValue);
+    console.log(selectedProduct);
+    if (selectedProduct === undefined) {
+      selectedProduct = this.products.find(p => p.name === event.option.viewValue);
+      if (selectedProduct.leftInStock > 1) {
+        selectedProduct.orderedQuantity = 1;
+        this.productsPurchased.push(selectedProduct);
+      }
+    }
+    else if (selectedProduct.orderedQuantity < selectedProduct.leftInStock)
+      selectedProduct.orderedQuantity++;
+  }
+
+  removeSelectedProduct(product: Product): void {
+    const index = this.productsPurchased.indexOf(product);
+    this.productsPurchased[index].orderedQuantity--;
+    if (this.productsPurchased[index].orderedQuantity === 0) this.productsPurchased.splice(index, 1);
+  }
+
+  addNewOrder(form: NgForm) {
+    console.log(form);
+    console.log(this.productsPurchased);
+
+    this.orderService.addNewOrder({
+      account_id: parseInt(form.controls["purchaser"].value.toString()),
+      shippingMethod: form.controls["shippingMethod"].value,
+      status: form.controls["status"].value
+    }).then(response => {
+      this.productsPurchased.forEach(pProduct => {
+        this.orderProductService.addNewOrderProduct({
+          order_id: response.id,
+          product_id: pProduct.id,
+          quantity: pProduct.orderedQuantity
+        });
+        pProduct.leftInStock -= pProduct.orderedQuantity;
+        delete pProduct.markedForDeletion //Remove not needed property
+        delete pProduct.orderedQuantity //Remove not needed property
+        this.productService.updateProduct(pProduct.id, pProduct, false, pProduct.leftInStock === 0); //Update leftInStock value
+      });
+
+      setTimeout(() => {
+        Swal.fire({
+          title: "Успешно су унети подаци о новој поруџбини и њеним купљеним производима",
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonText: "У реду",
+          allowOutsideClick: false
+        }).then(() => window.location.reload());
+      }, 2000);
+    }, reject => {
+      console.log(reject);
+      Swal.fire({
+        title: "Грешка приликом додавања нове поруџбине",
+        text: "Нова поруџбина не може бити додата. Проверите да ли су сви потребни Spring REST сервиси активни.",
+        icon: "warning",
+        showCancelButton: false,
+        confirmButtonText: "У реду",
+        allowOutsideClick: false
+      });
+    });
+  }
   
   editOrder(order: Order): void {
     
@@ -64,7 +160,21 @@ export class OrdersComponent implements OnInit {
     });
   }
 
-  deleteOrder(orderId: number): void {
+  deletion(orderId: number): void {
+    Swal.fire({
+      title: 'Изаберите жељену опцију?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: `Уклони поруџбину`,
+      denyButtonText: `Уклони поручене производе`,
+      allowOutsideClick: false
+    }).then(option => {
+      if (option.isConfirmed) this.deleteOrder(orderId);
+      if (option.isDenied) this.deleteOrderProduct(orderId);
+    });
+  }
+
+  private deleteOrder(orderId: number): void {
     Swal.fire({
       title: "Потврда уклањања поруџбине са ИД-јем " + orderId,
       text: "Да ли сте сигурни да желите да уклоните податке ове поруџбине?",
@@ -101,6 +211,71 @@ export class OrdersComponent implements OnInit {
         });
       }
     });
+  }
+
+  private deleteOrderProduct(orderId: number) {
+    this.orderProductService.getListOfOrderProductsByOrder(orderId).then(response => {
+      var html: string = "";
+      var j = 0;
+      response.forEach(orderedProduct => {
+        this.productService.findProduct(orderedProduct.product_id).then(op => {
+          html += `
+            <div>
+                <input type="checkbox" id="checkbox` + j + `">
+                <label class="form-check-label" for="checkbox`+ j + `">
+                ` + op.name + " (" + orderedProduct.quantity + " комада ) *" + op.id + `
+                </label>
+            </div>
+          `;
+          j++;
+        });
+      })
+
+      setTimeout(() => {
+        Swal.fire({
+          title: "Изаберите производе које желите да уклоните",
+          html: html,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Уклони изабране производе",
+          confirmButtonColor: "red",
+          cancelButtonText: "Одустани",
+          cancelButtonColor: "green",
+          allowOutsideClick: false,
+          preConfirm: () => {
+            var markedProducts: Array<number> = new Array<number>();
+            var labels = Swal.getPopup().getElementsByClassName("form-check-label");
+            
+            for (var i = 0; i < labels.length; i++) {
+              const checkBox = <HTMLInputElement>Swal.getPopup().querySelector("#" + (labels[i] as HTMLLabelElement).htmlFor);
+              
+              if (checkBox.checked)
+                markedProducts.push(parseInt(labels[i].innerHTML.split('*')[1]));
+            }
+            
+            return markedProducts;
+          }
+        }).then(response => {
+          if (response.value.length === 0) return; //Nothing selected
+
+          response.value.forEach(productId => {
+            this.orderProductService.deleteOrderProduct(orderId, productId);
+          });
+
+          setTimeout(() => {
+            Swal.fire({
+              title: "Уклањање изабраних производа успешно",
+              icon: "success",
+              showCancelButton: false,
+              confirmButtonText: "У реду",
+              allowOutsideClick: false
+            });
+          }, 2000);
+        });
+      }, 1000);
+    }, reject => {
+      console.log(reject);
+    })
   }
 
   showOrderedItems(id: number): void {
@@ -220,7 +395,7 @@ export class OrdersComponent implements OnInit {
         case "2": this.showTotalOfAllOrdersByShippingMethod(); break;
         case "3": this.showTotalOfAllOrdersByStatus(); break;
       }
-    });  
+    });
   }
 
   showTotalOfAllOrders() {
@@ -265,20 +440,20 @@ export class OrdersComponent implements OnInit {
         cancelButtonText: "Одустани",
         cancelButtonColor: "red",
         allowOutsideClick: false
-      }).then(choice => {      
+      }).then(choice => {
         if (choice.isConfirmed) {
           this.orderService.getTotalNumberFromAccount(choice.value).then(response => {
             var message: string = "";
             if (response === 0) message = "У бази се не налази ниједна поруџбина изабраног корисника";
             else message = "Укупан број свих поруџбина за изабраног корисника је " + response,
 
-            Swal.fire({
-              title: message,
-              icon: "info",
-              showCancelButton: false,
-              confirmButtonText: "У реду",
-              allowOutsideClick: false
-            });
+              Swal.fire({
+                title: message,
+                icon: "info",
+                showCancelButton: false,
+                confirmButtonText: "У реду",
+                allowOutsideClick: false
+              });
           }, reject => {
             console.log(reject);
             Swal.fire({
@@ -320,13 +495,13 @@ export class OrdersComponent implements OnInit {
           if (response === 0) message = "У бази се не налази ниједна поруџбина са изабраним начином доставе";
           else message = "Укупан број свих поруџбина са изабраним начином доставе је " + response,
 
-          Swal.fire({
-            title: message,
-            icon: "info",
-            showCancelButton: false,
-            confirmButtonText: "У реду",
-            allowOutsideClick: false
-          });
+            Swal.fire({
+              title: message,
+              icon: "info",
+              showCancelButton: false,
+              confirmButtonText: "У реду",
+              allowOutsideClick: false
+            });
         }, reject => {
           console.log(reject);
           Swal.fire({
@@ -366,13 +541,13 @@ export class OrdersComponent implements OnInit {
           if (response === 0) message = "У бази се не налази ниједна поруџбина са изабраним статусом";
           else message = "Укупан број свих поруџбина са изабраним статусом је " + response,
 
-          Swal.fire({
-            title: message,
-            icon: "info",
-            showCancelButton: false,
-            confirmButtonText: "У реду",
-            allowOutsideClick: false
-          });
+            Swal.fire({
+              title: message,
+              icon: "info",
+              showCancelButton: false,
+              confirmButtonText: "У реду",
+              allowOutsideClick: false
+            });
         }, reject => {
           console.log(reject);
           Swal.fire({
@@ -413,9 +588,9 @@ export class OrdersComponent implements OnInit {
           cancelButtonText: "Одустани",
           cancelButtonColor: "red",
           allowOutsideClick: false
-        }).then(choice => {      
+        }).then(choice => {
           if (choice.isConfirmed) {
-            this.orderProductService.getTotalNumberByProduct(choice.value).then(response => { 
+            this.orderProductService.getTotalNumberByProduct(choice.value).then(response => {
               Swal.fire({
                 title: "Изабрани производ је поручен " + response + " пута",
                 icon: "info",
@@ -748,232 +923,4 @@ export class OrdersComponent implements OnInit {
       }
     });
   }
-/*
-  addNewAccount(form: NgForm): void {
-    var newAccount: Account = new Account();
-    newAccount.name = form.controls["name"] === null ? "" : form.controls["name"].value;
-    newAccount.surname = form.controls["surname"] === null ? "" : form.controls["surname"].value;
-    newAccount.email = form.controls["email"] === null ? "" : form.controls["email"].value;
-    newAccount.password_hash = this.cs.encryptSHA256("8fefa3caea331537a156a114299d5b60ff96a9c5e2e34b824ccfc4fb3d33e3bc6cc34486365e15c4885870da648505e7cc9f957b7383e2a421e766c113f47f0c", form.controls["password"] === null ? "" : form.controls["password"].value);
-    newAccount.phoneNumber = form.controls["phone"] === null ? "" : form.controls["phone"].value;
-    newAccount.mobilePhoneNumber = form.controls["mobilePhone"] === null ? "" : form.controls["mobilePhone"].value;
-    newAccount.deliveryAddress = form.controls["deliveryAddress"] === null ? "" : form.controls["deliveryAddress"].value;
-    newAccount.deliveryAddressPAK = form.controls["deliveryAddressPAK"] === null ? "" : form.controls["deliveryAddressPAK"].value;
-
-    this.accountService.addNewAccount(newAccount).then(response => {
-      Swal.fire({
-        title: "Успешно додат нови кориснички налог",
-        text: JSON.stringify(response),
-        icon: "success",
-        showCancelButton: false,
-        confirmButtonText: "У реду",
-        allowOutsideClick: false
-      });
-    }, reject => {
-      console.log(reject);
-      Swal.fire({
-        title: "Грешка приликом додавања новог корисника",
-        text: "Није могуће додати кориснички налог. Проверите да ли је Spring REST сервис активан, а ако јесте онда се неки подаци већ постоје у бази за други или исти налог.",
-        icon: "error",
-        showCancelButton: false,
-        confirmButtonText: "У реду",
-        allowOutsideClick: false
-      });
-    });
-  }
-
-  checkPasswordRepeat(pass: NgModel, repeatPass: NgModel): void {
-    if (pass.value != repeatPass.value) repeatPass.control.setErrors({ "matched": true });
-    else repeatPass.control.setErrors(null);
-  }
-
-  checkRequiredFields(form: FormGroup): boolean {
-    var isAllValid: boolean = true;
-    Object.keys(form.controls).forEach(id => {
-      if(form.controls[id].hasError('required')) isAllValid = false;
-    });
-    return isAllValid && !form.controls["passwordRepeat"].hasError("matched");
-  }
-
-  editAccount(account: Account): void {
-
-    account.name = account.nameNew !== undefined && account.nameNew.match("^[\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+$") ? account.nameNew : account.name;
-    account.surname = account.surnameNew !== undefined && account.surnameNew.match("^([\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+(\s|\-)?)+$") ? account.surnameNew : account.surname;
-    account.email  = account.emailNew !== undefined && account.emailNew.match("^([a-z0-9_.-]+)@([\da-z.-]+)\.([a-z.]{2,6})$") ? account.emailNew : account.email;
-    account.password_hash = account.passwordNew !== undefined && account.passwordNew.length > 8 ? this.cs.encryptSHA256("8fefa3caea331537a156a114299d5b60ff96a9c5e2e34b824ccfc4fb3d33e3bc6cc34486365e15c4885870da648505e7cc9f957b7383e2a421e766c113f47f0c", account.passwordNew) : account.password_hash; 
-    account.phoneNumber = account.phoneNumberNew !== undefined && account.phoneNumberNew.match("^(0|\\+381)(([1-3][0-9])|(230)|(280)|(290)|(390))[0-9]{7}$") ? account.phoneNumberNew : account.phoneNumber; 
-    account.mobilePhoneNumber = account.mobilePhoneNumberNew !== undefined && account.mobilePhoneNumberNew.match("^(0|\\+381)6[0-69][0-9]{7}$") ? account.mobilePhoneNumberNew : account.mobilePhoneNumber;
-    account.deliveryAddress = account.deliveryAddressNew !== undefined && account.deliveryAddressNew.match("^([\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+\s)+((BB)|(ББ)|([0-9]+[a-z]?))$") ? account.deliveryAddressNew : account.deliveryAddress;
-    account.deliveryAddressPAK = account.deliveryAddressPAKNew !== undefined && account.deliveryAddressPAKNew.match("^[0-9]{6}$") ? account.deliveryAddressPAKNew : account.deliveryAddressPAK;
-    
-    if (account.nameNew === undefined && account.surnameNew === undefined && account.passwordNew === undefined
-      && account.emailNew === undefined && account.phoneNumberNew === undefined && account.mobilePhoneNumberNew === undefined
-      && account.deliveryAddressNew === undefined && account.deliveryAddressPAKNew === undefined) return;
-    //If nothing is changed stop here, otherwise clear all field and procceed to update data  
-    account.nameNew = undefined; 
-    account.surnameNew = undefined;
-    account.passwordNew = undefined;
-    account.emailNew = undefined;
-    account.phoneNumberNew = undefined;
-    account.mobilePhoneNumberNew = undefined;
-    account.deliveryAddressNew = undefined;
-    account.deliveryAddressPAKNew = undefined;
-
-    this.accountService.updateAccount(account.id, account).then(response => {
-      Swal.fire({
-        title: "Успешно промењен налог " + account.id,
-        text: JSON.stringify(response),
-        icon: "success",
-        showCancelButton: false,
-        confirmButtonText: "У реду",
-        allowOutsideClick: false
-      });
-    }, reject => {
-      console.log(reject);
-      Swal.fire({
-        title: "Грешка приликом промене података",
-        text: "Није могуће променити податке налога. Проверите да ли је Spring REST сервис активан.",
-        icon: "error",
-        showCancelButton: false,
-        confirmButtonText: "У реду",
-        allowOutsideClick: false
-      });
-    });
-  }
-
-  deleteAccount(accountId: number): void {
-    Swal.fire({
-      title: "Потврда уклањања корисничког налога са ИД-јем " + accountId,
-      text: "Да ли сте сигурни да желите да уклоните овај налог? Овим ће бити обрисани и сви подаци о поруџбинама и рецензијама овог корисника!",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Да",
-      confirmButtonColor: "red",
-      cancelButtonText: "Не",
-      cancelButtonColor: "green",
-      allowOutsideClick: false
-    }).then(choice => {
-      if (choice.isConfirmed) {
-        this.accountService.deleteAccount(accountId).then(() => { //Response will be null
-          Swal.fire({
-            title: "Успешно уклоњен кориснички налог са ИД-јем " + accountId,
-            text: "Заједно са тим су уклоњене све информације о корисниковим поруџбинама из базе",
-            icon: "success",
-            showCancelButton: false,
-            confirmButtonText: "У реду",
-            allowOutsideClick: false
-          }).then(() => {
-            this.listAll(); //Refresh all accounts
-          });
-        }, reject => {
-          console.log(reject);
-          Swal.fire({
-            title: "Грешка приликом уклањања корисника са ИД-јем " + accountId,
-            text: "Корисник са ИД-јем " + accountId + " не може бити уклоњен. Проверите да ли су сви потребни Spring REST сервиси активани.",
-            icon: "warning",
-            showCancelButton: false,
-            confirmButtonText: "У реду",
-            allowOutsideClick: false
-          });
-        });
-      }
-    });    
-  }
-
-  find(): void {
-    Swal.fire({
-      title: "Претрага корисничких налога",
-      html: "<html><body><span>Унесите ИД корисничког налога:</span><br><input type='number' id='prodavnica-oie-admin-accountId' min='1' class='swal2-input'></body></html>",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Пронађи",
-      confirmButtonColor: "green",
-      cancelButtonText: "Одустани",
-      cancelButtonColor: "red",
-      allowOutsideClick: false
-    }).then(() => {
-      var accountId = (<HTMLInputElement>Swal.getPopup().querySelector("#prodavnica-oie-admin-accountId")).value;
-      if (accountId === "") accountId = "-1";
-      this.accountService.findAccount(parseInt(accountId)).then(response => {
-        if (response != null)
-          Swal.fire({
-            title: "Пронађени су подаци корисника са ИД-јем " + accountId,
-            text: JSON.stringify(response),
-            icon: "success",
-            showCancelButton: false,
-            confirmButtonText: "У реду",
-            allowOutsideClick: false
-          });
-        else 
-          Swal.fire({
-            title: "Грешка приликом проналажења корисника",
-            text: "Корисник са ИД-јем " + accountId + " се не налази у бази података!",
-            icon: "warning",
-            showCancelButton: false,
-            confirmButtonText: "У реду",
-            allowOutsideClick: false
-          });
-      }, reject => {
-        console.log(reject);
-        Swal.fire({
-          title: "Грешка приликом проналажења корисника",
-          text: "Није могуће пронађи кориснички налог. Проверите да ли је Spring REST сервис активан.",
-          icon: "error",
-          showCancelButton: false,
-          confirmButtonText: "У реду",
-          allowOutsideClick: false
-        });
-      })
-    });
-  }
-
-  showTotal(): void {
-    this.accountService.getTotalNumber().then(response => {
-      Swal.fire({
-        title: "Укупан број корисничких налога је " + response,
-        icon: "info",
-        showCancelButton: false,
-        confirmButtonText: "У реду",
-        allowOutsideClick: false
-      });
-    }, reject => {
-      console.log(reject);
-      Swal.fire({
-        title: "Грешка приликом преузимања података",
-        text: "Није могуће преузети број корисничких налога. Проверите да ли је Spring REST сервис активан.",
-        icon: "error",
-        showCancelButton: false,
-        confirmButtonText: "У реду",
-        allowOutsideClick: false
-      });
-    });
-  }
-
-  listAll(): void {
-    this.accountService.getListOfAccounts().then(response => {
-      this.listedAccounts.data = response;
-      this.listedAccounts.sort = this.sort;
-      this.listedAccounts.paginator = this.paginator;
-
-      this.pageSizeOptionsSet.clear();
-      this.pageSizeOptionsSet.add(1);
-      this.pageSizeOptionsSet.add(Math.floor(this.listedAccounts.data.length / 2));
-      this.pageSizeOptionsSet.add(Math.floor(this.listedAccounts.data.length / 5));
-      this.pageSizeOptionsSet.add(Math.floor(this.listedAccounts.data.length / 8));
-      this.pageSizeOptionsSet.add(Math.floor(this.listedAccounts.data.length / 10));
-      this.pageSizeOptionsSet.add(this.listedAccounts.data.length);
-      this.pageSizeOptions = Array.from(this.pageSizeOptionsSet);
-    }, reject => {
-      console.log(reject);
-      Swal.fire({
-        title: "Грешка приликом преузимања података",
-        text: "Није могуће преузети листу корисничких налога. Проверите да ли је Spring REST сервис активан.",
-        icon: "error",
-        showCancelButton: false,
-        confirmButtonText: "У реду",
-        allowOutsideClick: false
-      });
-    });
-  } */
-
 }

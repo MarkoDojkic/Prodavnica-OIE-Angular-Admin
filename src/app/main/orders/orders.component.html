@@ -44,7 +44,7 @@
                     <mat-cell *matCellDef="let element">
                         <button mat-icon-button *ngIf="!element.isEditing && element.status !== 'COMPLETED'" (click)="element.isEditing = true"><mat-icon>edit</mat-icon></button>
                         <button mat-icon-button *ngIf="element.isEditing" (click)="element.isEditing = false; editOrder(element);"><mat-icon>check_circle</mat-icon></button>
-                        <button mat-icon-button (click)="deleteOrder(element.id)"><mat-icon>delete_forever</mat-icon></button>
+                        <button mat-icon-button (click)="deletion(element.id)"><mat-icon>delete_forever</mat-icon></button>
                         <button mat-icon-button (click)="showOrderedItems(element.id)"><mat-icon>shopping_basket</mat-icon></button>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -68,100 +68,68 @@
     </mat-tab>
 
     <mat-tab label="Додавање нове поруџбине">
-        <!-- <form fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="1.2%" fxLayoutGap.lt-md="2.2%"
-        #form="ngForm" (ngSubmit)="addNewAccount(form)" (ngReset)="form.reset()" class="mat-card"> --> <!-- Class mat-card is used to apply dark mode background and coloring -->
-            <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="5%">
-                <mat-form-field appearance="outline" fxFlex>
-                    <mat-label>Име</mat-label>
-                    <input type="text" pattern="^[\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+$" ngModel matInput name="name" #nameInput="ngModel" required/>
-                    <mat-hint>пр. Марко</mat-hint>
-                    <mat-error *ngIf="nameInput.hasError('required')">Поље имена не сме бити празно</mat-error>
-                </mat-form-field>
+        <form fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="1.2%" fxLayoutGap.lt-md="2.2%"
+        #form="ngForm" (ngSubmit)="addNewOrder(form)" (ngReset)="form.reset()" class="mat-card"> <!-- Class mat-card is used to apply dark mode background and coloring -->
+            <mat-form-field appearance="outline" fxFlex>
+                <mat-label>Наручилац</mat-label>
+                <mat-select matInput ngModel name="purchaser" required>
+                    <mat-option *ngFor="let purchaser of accounts" [value]="purchaser.id">
+                      {{ purchaser.name + " " + purchaser.surname }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>person</mat-icon>
+            </mat-form-field>
 
-                <mat-form-field appearance="outline" fxFlex>
-                    <mat-label>Презиме</mat-label>
-                    <input type="text" pattern="^([\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+(\s|\-)?)+$" ngModel matInput name="surname" #surnameInput="ngModel" required/>
-                    <mat-hint>пр. Дојкић или Петровић-Тошић или Fon Nojman</mat-hint> <!-- Patten includes one uppercase succeded with 1+ lowercase letter serbian cyrilic/latin or english -->
-                    <mat-error *ngIf="surnameInput.hasError('required')">Поље презимена не сме бити празно</mat-error>
-                </mat-form-field>
-            </div>
+            <mat-form-field appearance="outline" fxFlex>
+                <mat-label>Начин доставе</mat-label>
+                <mat-select matInput ngModel name="shippingMethod" required>
+                    <mat-option *ngFor="let shippingMethod of shippingMethods | keyvalue"
+                        [value]="shippingMethod.key"> {{ shippingMethod.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>local_shipping</mat-icon>
+            </mat-form-field>
 
-            <div>
-                <mat-form-field appearance="outline" fxFlex>
-                    <mat-label>Адреса електронске поште</mat-label>
-                    <input type="email" autocomplete="prodavnica-oie-new-email" pattern="^([a-z0-9_.-]+)@([\da-z.-]+)\.([a-z.]{2,6})$" ngModel matInput name="email" #emailInput="ngModel" required/>
-                    <mat-icon matSuffix>alternate_email</mat-icon>
-                    <mat-hint>пр. marko.dojkic.18@singimail.rs</mat-hint>
-                    <mat-error *ngIf="emailInput.hasError('required')">Поље адресе електронске поште не сме бити празно</mat-error>
-                    <mat-error *ngIf="emailInput.hasError('pattern')">Није исправан формат адресе електронске поште</mat-error>
-                </mat-form-field>
-            </div>
+            <mat-form-field appearance="outline" fxFlex>
+                <mat-label>Статус</mat-label>
+                <mat-select matInput ngModel name="status" required>
+                    <mat-option *ngFor="let status of statusOptions | keyvalue"
+                    [value]="status.key"> {{ status.value }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>pending</mat-icon>
+            </mat-form-field>
 
-            <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="5%">
-                <mat-form-field appearance="outline" fxFlex>
-                    <mat-label>Број телефона</mat-label>
-                    <input type="text" pattern="^(0|\+381)(([1-3][0-9])|(230)|(280)|(290)|(390))[0-9]{7}$" ngModel matInput name="phone" #phone="ngModel" [required]="mobilePhone.invalid || mobilePhone.pristine"/>
-                    <mat-icon matSuffix>phone</mat-icon>
-                    <mat-hint>пр. 0111234567 или +381111234567</mat-hint>
-                    <mat-error *ngIf="phone.hasError('required')">Поље фиксног броја телефона не сме бити празно ако није унет број мобилног телефона</mat-error>
-                    <mat-error *ngIf="phone.hasError('pattern')">Није исправан формат фиксног броја телефона</mat-error>
-                </mat-form-field>
+            <mat-form-field appearance="outline" fxFlex>
+                <mat-label>Поручени производи</mat-label>
+                <mat-chip-list #productChipList >
+                    <mat-chip
+                      *ngFor="let product of productsPurchased"
+                      [selectable]="false"
+                      [removable]="true"
+                      (removed)="removeSelectedProduct(product)">
+                      {{ product.name + "(" + product.orderedQuantity + " комада)"}}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                    <input
+                      placeholder="Унеси име производа"
+                      #productInput
+                      [formControl]="productInputControl"
+                      [matAutocomplete]="autocompleteProduct"
+                      [matChipInputFor]="productChipList"/>
+                  </mat-chip-list>
+                  <mat-autocomplete #autocompleteProduct="matAutocomplete" (optionSelected)="addSelectedProduct($event)">
+                    <mat-option *ngFor="let product of filteredProductNames | async" [value]="product"> <!-- Is async because of filtering with input -->
+                      {{ product }}
+                    </mat-option>
+                  </mat-autocomplete>
+            </mat-form-field>
             
-                <mat-form-field appearance="outline" fxFlex>
-                    <mat-label>Број мобилног телефона</mat-label>
-                    <input type="text" pattern="^(0|\+381)6[0-69][0-9]{7}$" ngModel matInput name="mobilePhone" #mobilePhone="ngModel" [required]="phone.invalid || phone.pristine"/>
-                    <mat-icon matSuffix>phone</mat-icon>
-                    <mat-hint>пр. 0651234567 или +381651234567</mat-hint>
-                    <mat-error *ngIf="mobilePhone.hasError('required')">Поље мобилног броја телефона не сме бити празно ако није унет број фиксног телефона</mat-error>
-                    <mat-error *ngIf="mobilePhone.hasError('pattern')">Није исправан формат мобилног броја телефона</mat-error>
-                </mat-form-field>
-            </div>
-
-            <!-- <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="5%">
-                <mat-form-field appearance="outline" fxFlex>
-                    <mat-label>Лозинка</mat-label>
-                    <input type="password" ngModel matInput autocomplete="new-password" name="password" #passwordInput="ngModel" minlength="8" required/>
-                    <mat-icon matSuffix>lock</mat-icon>
-                    <mat-hint>пр. secretPassword123</mat-hint>
-                    <mat-error *ngIf="passwordInput.hasError('required')">Поље лозинке не сме бити празно</mat-error>
-                    <mat-error *ngIf="passwordInput.hasError('minlength')">Лозинка мора садржати минимум 8 карактера</mat-error>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" fxFlex>
-                    <mat-label>Понови лозинку</mat-label>
-                    <input type="password" ngModel matInput autocomplete="new-password" name="passwordRepeat" #passwordInputRepeat="ngModel" (ngModelChange)="checkPasswordRepeat(passwordInput, passwordInputRepeat)" required/>
-                    <mat-icon matSuffix>lock</mat-icon>
-                    <mat-hint>Иста лозинка као у пољу поред</mat-hint>
-                    <mat-error *ngIf="passwordInputRepeat.hasError('required')">Поље поновне лозинке не сме бити празно</mat-error>
-                    <mat-error *ngIf="passwordInputRepeat.hasError('matched')">Поље се не подудара са лозинком у пољу поред</mat-error>
-                </mat-form-field>
-            </div>
- -->
-            <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="5%">
-                <mat-form-field appearance="outline" fxFlex>
-                    <mat-label>Адреса за доставу</mat-label>
-                    <input type="text" pattern="^([\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160]{1}[\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u0161]+\s)+((BB)|(ББ)|([0-9]+[a-z]?))$" 
-                            ngModel matInput name="deliveryAddress" #deliveryAddressAddress="ngModel" [required]="deliveryAddressPak.invalid || deliveryAddressPak.pristine">
-                    <mat-icon matSuffix>location_on</mat-icon>
-                    <mat-hint>пр. Данијелова 32 или Цара Душана 75d или Вудроа Вилсона ББ</mat-hint>
-                    <mat-error *ngIf="deliveryAddressAddress.hasError('required')">Поље адресе за доставу не сме бити празно уколико ПАК није наведен</mat-error>
-                </mat-form-field>
-                <!-- Checking this group of fields has bugs in some edge cases -->
-                <mat-form-field appearance="outline" fxFlex>
-                    <mat-label>Поштански адресни код</mat-label>
-                    <input type="number" pattern="^[0-9]{6}$" ngModel matInput name="deliveryAddressPAK" #deliveryAddressPak="ngModel" [required]="deliveryAddressAddress.invalid || deliveryAddressAddress.pristine"/>
-                    <mat-icon matSuffix>local_post_office</mat-icon>
-                    <mat-hint>пр. 456789</mat-hint>
-                    <mat-error *ngIf="deliveryAddressPak.hasError('required')">Поље ПАК броја не сме бити празно уколико адреса за доставу није наведена</mat-error>
-                </mat-form-field>
-                
-            </div>
-
-            <!-- <section fxLayout="row" fxLayoutGap="10px"> -->
-                <!-- <button type="submit" mat-stroked-button color="primary" [disabled]="!checkRequiredFields(form)">Додај налог</button> --> <!-- Disabled if form is invalid -->
-                <!-- <button type="reset" mat-stroked-button color="warn" [disabled]="form.pristine">Обриши све</button> --> <!-- Disabled if form isn't modified -->
-           <!--  </section> -->
-        <!-- </form> -->
+            <section fxLayout="row" fxLayoutGap="10px">
+                <button type="submit" mat-stroked-button color="primary" [disabled]="!checkRequiredFields(form)">Додај поруџбину</button>
+                <button type="reset" mat-stroked-button color="warn" [disabled]="form.pristine">Обриши све</button> <!-- Disabled if form isn't modified -->
+            </section>
+        </form>
         <section></section> <!-- Blank space -->
     </mat-tab>
 </mat-tab-group>

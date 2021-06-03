@@ -46,7 +46,7 @@ export class AccountsComponent implements OnInit {
         showCancelButton: false,
         confirmButtonText: "У реду",
         allowOutsideClick: false
-      });
+      }).then(() => window.location.reload());
     }, reject => {
       console.log(reject);
       Swal.fire({

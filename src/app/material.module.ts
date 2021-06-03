@@ -21,6 +21,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
     imports: [
@@ -45,7 +47,9 @@ import { MatChipsModule } from '@angular/material/chips';
         MatSortModule,
         MatSnackBarModule,
         MatPaginatorModule,
-        MatChipsModule
+        MatChipsModule,
+        MatSelectModule,
+        MatAutocompleteModule
     ],
     exports: [
         MatButtonModule,
@@ -69,7 +73,9 @@ import { MatChipsModule } from '@angular/material/chips';
         MatSortModule,
         MatSnackBarModule,
         MatPaginatorModule,
-        MatChipsModule
+        MatChipsModule,
+        MatSelectModule,
+        MatAutocompleteModule
     ]
 })
 
