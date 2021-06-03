@@ -1,0 +1,50 @@
+.mat-tab-group {
+    text-align: center;
+}
+
+.mat-table {
+    width: 100%;
+}
+
+.mat-column-categoryName {
+    flex: 80;
+}
+
+.mat-column-actions {
+    flex: 10;
+}
+
+.mat-column-nameSurname {
+    flex: 35
+}
+
+.mat-column-productName {
+    flex: 35
+}
+
+.mat-column-review {
+    flex: 20
+}
+
+.mat-cell > span, input {
+    width: 100%;
+}
+
+form {
+    height: 100%;
+    overflow-y: hidden;
+    padding-top: 5px;
+    padding-bottom: 17px;
+}
+
+mat-form-field {
+    width: 68%;
+}
+
+@media screen and (max-width: 960px) {
+    form {
+        height: 100%;
+        overflow-y: hidden;
+        padding-top: 5px;
+    }
+}

@@ -92,6 +92,7 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`category_id`, `name`) VALUES
+(0, 'Непозната категорија'),
 (1, 'Solar panel - Monocrystalline silicon'),
 (2, 'Solar panel - Polycrystalline silicon'),
 (3, 'Solar panel - Amorphous'),

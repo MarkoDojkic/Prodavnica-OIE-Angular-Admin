@@ -117,7 +117,7 @@ export class OrdersComponent implements OnInit {
         }).then(() => window.location.reload());
       }, 2000);
     }, reject => {
-      console.log(reject);
+      //console.log(reject);
       Swal.fire({
         title: "Грешка приликом додавања нове поруџбине",
         text: "Нова поруџбина не може бити додата. Проверите да ли су сви потребни Spring REST сервиси активни.",
@@ -145,7 +145,7 @@ export class OrdersComponent implements OnInit {
         allowOutsideClick: false
       });
     }, reject => {
-      console.log(reject);
+      //console.log(reject);
       Swal.fire({
         title: "Грешка приликом промене података",
         text: "Није могуће променити податке поруџбине. Проверите да ли је Spring REST сервис активан.",
@@ -196,7 +196,7 @@ export class OrdersComponent implements OnInit {
             this.listOrders();
           });
         }, reject => {
-          console.log(reject);
+          //console.log(reject);
           Swal.fire({
             title: "Грешка приликом уклањања података о поруџбини са ИД-јем " + orderId,
             text: "Поруџбина са ИД-јем " + orderId + " не може бити уклоњена. Проверите да ли су сви потребни Spring REST сервиси активни.",
@@ -284,7 +284,7 @@ export class OrdersComponent implements OnInit {
         });
       }, 1000);
     }, reject => {
-      console.log(reject);
+      //console.log(reject);
     })
   }
 
@@ -316,7 +316,7 @@ export class OrdersComponent implements OnInit {
         });
       }, 1001);
     }, reject => {
-      console.log(reject);
+      //console.log(reject);
       Swal.fire({
         title: "Грешка приликом преузимања података о порученим производима за поруџбину са ИД-јем " + id,
         text: "Проверите да ли су сви потребни Spring REST сервиси активани.",
@@ -366,7 +366,7 @@ export class OrdersComponent implements OnInit {
               allowOutsideClick: false
             });
         }, reject => {
-          console.log(reject);
+          //console.log(reject);
           Swal.fire({
             title: "Грешка приликом проналажења поруџбине",
             text: "Није могуће пронађи поруџбину. Проверите да ли је Spring REST сервис активан.",
@@ -418,7 +418,7 @@ export class OrdersComponent implements OnInit {
         allowOutsideClick: false
       });
     }, reject => {
-      console.log(reject);
+      //console.log(reject);
       Swal.fire({
         title: "Грешка приликом преузимања података",
         text: "Није могуће преузети укупан број свих поруџбина. Проверите да ли је Spring REST сервис активан.",
@@ -465,7 +465,7 @@ export class OrdersComponent implements OnInit {
                 allowOutsideClick: false
               });
           }, reject => {
-            console.log(reject);
+            //console.log(reject);
             Swal.fire({
               title: "Грешка приликом преузимања података",
               text: "Није могуће преузети укупан број свих поруџбина за изабраног корисника. Проверите да ли је Spring REST сервис активан.",
@@ -477,7 +477,7 @@ export class OrdersComponent implements OnInit {
           });
         }
       });
-    })
+    });
   }
 
   private showTotalOfAllOrdersByShippingMethod() {
@@ -513,7 +513,7 @@ export class OrdersComponent implements OnInit {
               allowOutsideClick: false
             });
         }, reject => {
-          console.log(reject);
+          //console.log(reject);
           Swal.fire({
             title: "Грешка приликом преузимања података",
             text: "Није могуће преузети укупан број свих поруџбина са изабраним начином доставе. Проверите да ли је Spring REST сервис активан.",
@@ -559,7 +559,7 @@ export class OrdersComponent implements OnInit {
               allowOutsideClick: false
             });
         }, reject => {
-          console.log(reject);
+          //console.log(reject);
           Swal.fire({
             title: "Грешка приликом преузимања података",
             text: "Није могуће преузети укупан број свих поруџбина са изабраним статусом. Проверите да ли је Spring REST сервис активан.",
@@ -609,7 +609,7 @@ export class OrdersComponent implements OnInit {
                 allowOutsideClick: false
               });
             }, reject => {
-              console.log(reject);
+              //console.log(reject);
               Swal.fire({
                 title: "Грешка приликом преузимања података",
                 text: "Није могуће преузети укупан број свих поруџбина за изабраног корисника. Проверите да ли је Spring REST сервис активан.",
@@ -695,7 +695,7 @@ export class OrdersComponent implements OnInit {
         allowOutsideClick: false
       });
     }, reject => {
-      console.log(reject);
+      //console.log(reject);
       Swal.fire({
         title: "Грешка приликом преузимања података",
         text: "Није могуће преузети листу поруџбина. Проверите да ли је Spring REST сервис активан.",
@@ -770,7 +770,7 @@ export class OrdersComponent implements OnInit {
               allowOutsideClick: false
             });
           }, reject => {
-            console.log(reject);
+            //console.log(reject);
             Swal.fire({
               title: "Грешка приликом преузимања података",
               text: "Није могуће преузети листу поруџбина. Проверите да ли је Spring REST сервис активан.",
@@ -846,7 +846,7 @@ export class OrdersComponent implements OnInit {
             allowOutsideClick: false
           });
         }, reject => {
-          console.log(reject);
+          //console.log(reject);
           Swal.fire({
             title: "Грешка приликом преузимања података",
             text: "Није могуће преузети листу поруџбина. Проверите да ли је Spring REST сервис активан.",
@@ -920,7 +920,7 @@ export class OrdersComponent implements OnInit {
             allowOutsideClick: false
           });
         }, reject => {
-          console.log(reject);
+          //console.log(reject);
           Swal.fire({
             title: "Грешка приликом преузимања података",
             text: "Није могуће преузети листу поруџбина. Проверите да ли је Spring REST сервис активан.",

@@ -6,6 +6,7 @@ import pr.markodojkic.prodavnicaoieadmin.product.entity.Category;
 import pr.markodojkic.prodavnicaoieadmin.product.repository.ICategoryRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService implements ICategoryService {
@@ -20,8 +21,8 @@ public class CategoryService implements ICategoryService {
     @Override
     public Category updateCategoryById(int id, Category newCategoryData) {
         Category category = this.findCategoryById(id);
-        if(category == null) return null;
-
+        if(category == null || id == 0 || newCategoryData.getName().equals(category.getName())) return null;
+        //0 is for default category so it cannot be change, also if nothing is changed no need to update
         if(newCategoryData.getName() != null) category.setName(newCategoryData.getName());
 
         return this.addNewCategory(category);
@@ -29,7 +30,8 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public void deleteCategoryById(int id) {
-        this.categoryRepository.deleteById(id);
+      if(id == 0) return; //0 is for default category
+      this.categoryRepository.deleteById(id);
     }
 
     @Override
@@ -40,11 +42,11 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public long getTotalNumberOfCategories() {
-        return this.categoryRepository.count();
+        return this.categoryRepository.count()-1; //0 is for default category, so hide it
     }
 
     @Override
     public List<Category> listAllCategories() {
-        return this.categoryRepository.findAll();
+        return this.categoryRepository.findAll().stream().skip(1).collect(Collectors.toList()); //0 is for default category, so hide it
     }
 }
