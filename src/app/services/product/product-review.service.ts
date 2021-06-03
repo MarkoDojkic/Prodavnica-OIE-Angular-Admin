@@ -20,7 +20,7 @@ export class ProductReviewService {
 
   public updateProductReview(productId: number, accountId: number, newProductReviewData: ProductReview): Promise<ProductReview> {
     return this.http.patch<ProductReview>
-      ("http://localhost:51682/api/prodavnicaoieadmin/productReview/update/" + productId + "/" + accountId, newProductReviewData, { headers: this.headers }).toPromise();
+      ("http://localhost:51682/api/prodavnicaoieadmin/productReview/update/" + productId + "/" + accountId + "?isNegativeReview=" + (newProductReviewData.review === 0).valueOf(), newProductReviewData, { headers: this.headers }).toPromise();
   }
 
   public deleteProductReview(productId: number, accountId: number): Promise<any> {

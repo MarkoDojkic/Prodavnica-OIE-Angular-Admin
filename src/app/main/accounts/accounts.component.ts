@@ -48,7 +48,7 @@ export class AccountsComponent implements OnInit {
         allowOutsideClick: false
       }).then(() => window.location.reload());
     }, reject => {
-      console.log(reject);
+      //console.log(reject);
       Swal.fire({
         title: "Грешка приликом додавања новог корисника",
         text: "Није могуће додати кориснички налог. Проверите да ли је Spring REST сервис активан, а ако јесте онда се неки подаци већ налазе у бази за други или исти налог.",
@@ -111,7 +111,7 @@ export class AccountsComponent implements OnInit {
         }).then(() => this.listAll());
       }
     }, reject => {
-      console.log(reject);
+      //console.log(reject);
       Swal.fire({
         title: "Грешка приликом промене података",
         text: "Није могуће променити податке налога. Проверите да ли је Spring REST сервис активан.",
@@ -148,7 +148,7 @@ export class AccountsComponent implements OnInit {
             this.listAll(); //Refresh all accounts
           });
         }, reject => {
-          console.log(reject);
+          //console.log(reject);
           Swal.fire({
             title: "Грешка приликом уклањања корисника са ИД-јем " + accountId,
             text: "Корисник са ИД-јем " + accountId + " не може бити уклоњен. Проверите да ли су сви потребни Spring REST сервиси активни.",
@@ -201,7 +201,7 @@ export class AccountsComponent implements OnInit {
               allowOutsideClick: false
             });
         }, reject => {
-          console.log(reject);
+          //console.log(reject);
           Swal.fire({
             title: "Грешка приликом проналажења корисника",
             text: "Није могуће пронађи кориснички налог. Проверите да ли је Spring REST сервис активан.",
@@ -229,7 +229,7 @@ export class AccountsComponent implements OnInit {
         allowOutsideClick: false
       });
     }, reject => {
-      console.log(reject);
+      //console.log(reject);
       Swal.fire({
         title: "Грешка приликом преузимања података",
         text: "Није могуће преузети укупан број корисничких налога. Проверите да ли је Spring REST сервис активан.",
@@ -276,7 +276,7 @@ export class AccountsComponent implements OnInit {
         allowOutsideClick: false
       });
     }, reject => {
-      console.log(reject);
+      //console.log(reject);
       Swal.fire({
         title: "Грешка приликом преузимања података",
         text: "Није могуће преузети листу корисничких налога. Проверите да ли је Spring REST сервис активан.",
