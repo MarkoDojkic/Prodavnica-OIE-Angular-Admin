@@ -91,14 +91,14 @@ export class AccountsComponent implements OnInit {
       && account.phoneNumber !== account.phoneNumberNew && account.mobilePhoneNumber !== account.mobilePhoneNumberNew
       && account.deliveryAddress !== account.deliveryAddressNew && account.deliveryAddressPAK !== account.deliveryAddressPAKNew)
       return; //If nothing is changed stop here, otherwise clear all fields and procceed to update data
-    delete account.nameNew;
-    delete account.surnameNew;
-    delete account.passwordNew;
-    delete account.emailNew;
-    delete account.phoneNumberNew;
-    delete account.mobilePhoneNumberNew;
-    delete account.deliveryAddressNew;
-    delete account.deliveryAddressPAKNew;
+    delete account.nameNew; //Removing not needed property
+    delete account.surnameNew; //Removing not needed property
+    delete account.passwordNew; //Removing not needed property
+    delete account.emailNew; //Removing not needed property
+    delete account.phoneNumberNew; //Removing not needed property
+    delete account.mobilePhoneNumberNew; //Removing not needed property
+    delete account.deliveryAddressNew; //Removing not needed property
+    delete account.deliveryAddressPAKNew; //Removing not needed property
 
     this.accountService.updateAccount(account.id, account).then(response => {
       if (response !== null) {

@@ -1,3 +1,5 @@
+import { OrderProductService } from './../../services/order/order-product.service';
+import { FormGroup, NgForm } from '@angular/forms';
 import { AccountService } from 'src/app/services/account/account.service';
 import { ProductReviewService } from './../../services/product/product-review.service';
 import { ProductReview } from './../../model/productReview';
@@ -36,7 +38,7 @@ export class ProductsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatPaginator) paginatorProduct: MatPaginator;
 
-  constructor(private productService: ProductService, private categoryService: CategoryService,
+  constructor(private productService: ProductService, private categoryService: CategoryService, private orderProductService: OrderProductService,
       private productReviewService: ProductReviewService, private accountService: AccountService) { }
 
   ngOnInit(): void {
@@ -48,8 +50,95 @@ export class ProductsComponent implements OnInit {
     })
   }
 
-  consoleLog(test: any): void {
-    console.log(test);
+  checkRequiredFields(form: FormGroup): boolean {
+    var isAllValid: boolean = true;
+    Object.keys(form.controls).forEach(id => {
+      if (form.controls[id].hasError('required')) isAllValid = false;
+    });
+    return isAllValid;
+  }
+
+  private checkOtherServices(): Promise<boolean> {
+    return this.orderProductService.getTotalNumber().then(() => {
+      return this.productReviewService.getTotalNumber().then(
+        () => { return true; }, () => { return false; })
+    }, () => { return false; });
+  }
+
+  addNewProduct(form: NgForm) {
+    
+    var newProduct: Product = new Product();
+
+    newProduct.name = form.controls["productName"].value;
+    newProduct.category = { "id": form.controls["category"].value["key"], "name": form.controls["category"].value["value"] }
+    newProduct.price = form.controls["price"].value;
+    newProduct.leftInStock = form.controls["leftInStock"].value;
+    newProduct.description = form.controls["description"].value;
+
+    delete newProduct.markedForDeletion; //Removing not needed property
+    delete newProduct.isEditing; //Removing not needed property
+
+    this.productService.addNewProduct(newProduct).then(response => {
+      Swal.fire({
+        title: "Успешно додат нов производ " + response.id,
+        icon: "success",
+        showCancelButton: false,
+        confirmButtonText: "У реду",
+        allowOutsideClick: false
+      }).then(() => window.location.reload());
+    }, reject => {
+      //console.log(reject);
+      Swal.fire({
+        title: "Грешка приликом додавања новог производа",
+        text: "Није могуће додати нов производ. Проверите да ли је Spring REST сервис активан.",
+        icon: "error",
+        showCancelButton: false,
+        confirmButtonText: "У реду",
+        allowOutsideClick: false
+      });
+    });
+  }
+
+  deleteProduct(productId: number): void {
+    Swal.fire({
+      title: "Потврда уклањања производа",
+      text: "Да ли сте сигурни да желите да уклоните овај производа? Тиме ће исти бити уклоњен из свих поруџбина, такође ће бити и обрисане његове рецензије!",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Да",
+      confirmButtonColor: "red",
+      cancelButtonText: "Не",
+      cancelButtonColor: "green",
+      allowOutsideClick: false
+    }).then(choice => {
+      if (choice.isConfirmed) {
+        this.checkOtherServices().then(() => {
+          this.orderProductService.deleteAllOrderProductsByProduct(productId).then(() => {
+            this.productReviewService.deleteAllProductReviewsByProduct(productId).then(() => {
+              this.productService.deleteProduct(productId).then(() => {
+                Swal.fire({
+                  title: "Успешно уклоњени подаци производа",
+                  icon: "success",
+                  showCancelButton: false,
+                  confirmButtonText: "У реду",
+                  allowOutsideClick: false
+                }).then(() => this.listProducts());
+              }, reject => Promise.reject(/* reject */))
+            }, reject => Promise.reject(/* reject */))
+          }, reject => Promise.reject(/* reject */))
+        }, reject => {
+          //console.log(reject);
+          Swal.fire({
+            title: "Грешка приликом уклањања производа",
+            text: "Није могуће уклонити податке производа. Проверите да ли су сви потребни Spring REST сервиси активан.",
+            icon: "error",
+            showCancelButton: false,
+            confirmButtonText: "У реду",
+            allowOutsideClick: false
+          });
+        });
+      }
+    });
   }
 
   editProduct(product: Product): void {
@@ -61,7 +150,7 @@ export class ProductsComponent implements OnInit {
 
     this.productService.updateProduct(product.id, product, product.newPrice === 0.00, product.newStockQuantity === 0).then(() => {
       Swal.fire({
-        title: "Подаци прозивода успешно промењени",
+        title: "Подаци производа успешно промењени",
         icon: "success",
         showCancelButton: false,
         confirmButtonText: "У реду",
@@ -77,6 +166,58 @@ export class ProductsComponent implements OnInit {
         confirmButtonText: "У реду",
         allowOutsideClick: false
       });
+    });
+  }
+
+  findProduct(): void {
+    Swal.fire({
+      title: "Претрага производа",
+      html: `<html><body>
+                <span>Унесите ИД производа:</span><br>
+                <input type='number' id='prodavnica-oie-admin-productId'
+                min='1' class='swal2-input'>
+            </body></html>`,
+      icon: "question", /* input:"number" is not used because of css style */
+      showCancelButton: true,
+      confirmButtonText: "Пронађи",
+      confirmButtonColor: "green",
+      cancelButtonText: "Одустани",
+      cancelButtonColor: "red",
+      allowOutsideClick: false
+    }).then(response => {
+      if (response.isConfirmed) {
+        var productId = (<HTMLInputElement>Swal.getPopup().querySelector("#prodavnica-oie-admin-productId")).value;
+        this.productService.findProduct(parseInt(productId)).then(response => {
+          if (response != null)
+            Swal.fire({
+              title: "Пронађени су подаци производа са ИД-јем " + productId,
+              text: JSON.stringify(response),
+              icon: "success",
+              showCancelButton: false,
+              confirmButtonText: "У реду",
+              allowOutsideClick: false
+            });
+          else
+            Swal.fire({
+              title: "Грешка приликом проналажења производа",
+              text: "Производ са ИД-јем " + productId + " се не налази у бази података!",
+              icon: "warning",
+              showCancelButton: false,
+              confirmButtonText: "У реду",
+              allowOutsideClick: false
+            });
+        }, reject => {
+          //console.log(reject);
+          Swal.fire({
+            title: "Грешка приликом проналажења производа",
+            text: "Није могуће пронађи производ. Проверите да ли је Spring REST сервис активан.",
+            icon: "error",
+            showCancelButton: false,
+            confirmButtonText: "У реду",
+            allowOutsideClick: false
+          });
+        });
+      }
     });
   }
 
@@ -151,16 +292,16 @@ export class ProductsComponent implements OnInit {
 
   showProductDescription(product: Product): void {
     Swal.fire({
-      title: "Приказ описа изабраног прозивода",
+      title: "Приказ описа изабраног производа",
       input: "textarea",
       inputValue: product.description,
       inputAutoTrim: true,
       showCancelButton: false,
-      confirmButtonText: "Измени опис прозивода",
+      confirmButtonText: "Измени опис производа",
       allowOutsideClick: false,
       preConfirm: newDescription => {
         if ((newDescription as string).length > 512)
-          Swal.showValidationMessage("Максимална дозвољена дужина описа прозивода је 512 карактера, а Ваша дужина је: " + newDescription.length);
+          Swal.showValidationMessage("Максимална дозвољена дужина описа производа је 512 карактера, а Ваша дужина је: " + newDescription.length);
         else return newDescription as string;
       }
     }).then(response => {
@@ -179,7 +320,7 @@ export class ProductsComponent implements OnInit {
           //console.log(reject);
           Swal.fire({
             title: "Грешка приликом промене података",
-            text: "Није могуће променити опис прозивода. Проверите да ли је Spring REST сервис активан.",
+            text: "Није могуће променити опис производа. Проверите да ли је Spring REST сервис активан.",
             icon: "error",
             showCancelButton: false,
             confirmButtonText: "У реду",
@@ -290,6 +431,63 @@ export class ProductsComponent implements OnInit {
         });
       }
       
+    });
+  }
+
+  findReview(): void {
+    Swal.fire({
+      title: "Претрага рецензија",
+      html: `<html><body>
+                <span>Унесите ИД производа:</span><br>
+                <input type='number' id='prodavnica-oie-admin-productId'
+                min='1' class='swal2-input'>
+                <br></br>
+                <span>Унесите ИД наручиоца:</span><br>
+                <input type='number' id='prodavnica-oie-admin-accountId'
+                min='1' class='swal2-input'>
+            </body></html>`,
+      icon: "question", /* input:"number" is not used because of css style */
+      showCancelButton: true,
+      confirmButtonText: "Пронађи",
+      confirmButtonColor: "green",
+      cancelButtonText: "Одустани",
+      cancelButtonColor: "red",
+      allowOutsideClick: false
+    }).then(response => {
+      if (response.isConfirmed) {
+        var productId = (<HTMLInputElement>Swal.getPopup().querySelector("#prodavnica-oie-admin-productId")).value;
+        var accountId = (<HTMLInputElement>Swal.getPopup().querySelector("#prodavnica-oie-admin-accountId")).value;
+        this.productReviewService.findProductReview(parseInt(productId), parseInt(accountId)).then(response => {
+          if (response != null)
+            Swal.fire({
+              title: "Пронађени су подаци рецензије",
+              text: JSON.stringify(response),
+              icon: "success",
+              showCancelButton: false,
+              confirmButtonText: "У реду",
+              allowOutsideClick: false
+            });
+          else
+            Swal.fire({
+              title: "Грешка приликом проналажења рецензије",
+              text: "Рецензија са ИД-јем производа " + productId + " и ИД-јем наручиоца " + accountId + " се не налази у бази података!",
+              icon: "warning",
+              showCancelButton: false,
+              confirmButtonText: "У реду",
+              allowOutsideClick: false
+            });
+        }, reject => {
+          //console.log(reject);
+          Swal.fire({
+            title: "Грешка приликом проналажења рецензије",
+            text: "Није могуће пронађи рецензију. Проверите да ли је Spring REST сервис активан.",
+            icon: "error",
+            showCancelButton: false,
+            confirmButtonText: "У реду",
+            allowOutsideClick: false
+          });
+        });
+      }
     });
   }
 
