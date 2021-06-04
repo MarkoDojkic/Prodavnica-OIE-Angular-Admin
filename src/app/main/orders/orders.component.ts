@@ -49,11 +49,11 @@ export class OrdersComponent implements OnInit {
   ngOnInit(): void {
     this.accountService.getListOfAccounts().then(response => { this.accounts = response });
     this.productService.getListOfProducts().then(response => {
-      this.products = response;
+      this.products = response.filter(product => product.leftInStock > 0); //To not include out of stock products
       this.filteredProductNames = this.productInputControl.valueChanges.pipe(startWith(null), map(
-        (name: string | null) => name ? this.products.map(product => product.name).filter
+        (name: string | null) => name ? this.products.map(product => { return product.name + " ( " + product.category.name + " )" }).filter
           (productName => productName.toLowerCase().indexOf(name.toLowerCase()) === 0)
-          : this.products.map(product => product.name).slice())
+          : this.products.map(product => { return product.name + " ( " + product.category.name + " )" }).slice())
       );
     });
   }
@@ -66,11 +66,12 @@ export class OrdersComponent implements OnInit {
     return isAllValid;
   }
 
-  addSelectedProduct(event: MatAutocompleteSelectedEvent): void {
-    var selectedProduct: Product = this.productsPurchased.find(p => p.name === event.option.viewValue);
-    console.log(selectedProduct);
+  addSelectedProduct(event: MatAutocompleteSelectedEvent): void {    
+    var selectedProduct: Product = this.productsPurchased.find(product => event.option.viewValue.startsWith(product.name, 0));
+
     if (selectedProduct === undefined) {
-      selectedProduct = this.products.find(p => p.name === event.option.viewValue);
+      selectedProduct = this.products.find(product => event.option.viewValue.startsWith(product.name, 0));
+
       if (selectedProduct.leftInStock > 1) {
         selectedProduct.orderedQuantity = 1;
         this.productsPurchased.push(selectedProduct);

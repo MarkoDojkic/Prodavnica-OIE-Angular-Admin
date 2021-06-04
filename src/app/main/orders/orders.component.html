@@ -124,7 +124,7 @@
                     </mat-option>
                   </mat-autocomplete>
             </mat-form-field>
-            
+            <span>Напомена: Уколико производ није на стању он се неће приказати у избору изнад!</span>
             <section fxLayout="row" fxLayoutGap="10px">
                 <button type="submit" mat-stroked-button color="primary" [disabled]="!checkRequiredFields(form)">Додај поруџбину</button>
                 <button type="reset" mat-stroked-button color="warn" [disabled]="form.pristine">Обриши све</button> <!-- Disabled if form isn't modified -->

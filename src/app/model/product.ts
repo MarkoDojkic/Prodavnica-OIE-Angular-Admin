@@ -11,4 +11,7 @@ export class Product {
     //for showing in orders as ordered product
     orderedQuantity?: number;
     markedForDeletion?: boolean = false;
+    isEditing?: boolean = false;
+    newStockQuantity?: number;
+    newPrice?: number;
 }

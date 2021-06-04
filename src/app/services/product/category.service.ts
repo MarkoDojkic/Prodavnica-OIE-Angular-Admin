@@ -30,7 +30,7 @@ export class CategoryService {
 
   public findCategory(categoryId: number): Promise<Category> {
     return this.http.get<Category>
-      ("http://localhost:51682/api/prodavnicaoieadmin/category/find" + categoryId, { headers: this.headers }).toPromise();
+      ("http://localhost:51682/api/prodavnicaoieadmin/category/find/" + categoryId, { headers: this.headers }).toPromise();
   }
 
   public getTotalNumber(): Promise<number> {

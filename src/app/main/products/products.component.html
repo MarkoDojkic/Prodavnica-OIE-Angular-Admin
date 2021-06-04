@@ -1,68 +1,77 @@
 <mat-tab-group mat-stretch-tabs class="mat-card">
     <mat-tab label="Измена и приказ производа">
         <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="2%" class="mat-card">
-            <!-- <mat-table [dataSource]="listedProducts" matSort>
-                <ng-container matColumnDef="nameSurname">
-                    <mat-header-cell *matHeaderCellDef style="margin-left: 18% !important;">Име и презиме наручиоца</mat-header-cell>
+            <mat-table [dataSource]="listedProducts" matSort>
+                <ng-container matColumnDef="productName_">
+                    <mat-header-cell *matHeaderCellDef style="margin-left: 15% !important;" mat-sort-header>Назив производа</mat-header-cell>
                     <mat-cell *matCellDef="let element">
-                        <span>{{ element.accountName + " " + element.accountSurname }}</span>
+                        <span>{{ element.name }}</span>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>
-                <ng-container matColumnDef="shippingMethod">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: -3% !important;">Начин доставе</mat-header-cell>
+                <ng-container matColumnDef="categoryName_">
+                    <mat-header-cell *matHeaderCellDef>Назив категорије</mat-header-cell>
                     <mat-cell *matCellDef="let element">
-                        <span *ngIf="!element.isEditing">{{ shippingMethods.get(element.shippingMethod) }}</span>
+                        <span *ngIf="!element.isEditing">{{ productCategories.get(element.category.id) }}</span>
                         <span *ngIf="element.isEditing">
-                            <select (change)="element.shippingMethodNew = $event.target.value">
-                                <option *ngFor="let shippingMethod of shippingMethods | keyvalue"
-                                    [value]="shippingMethod.key" [selected]="element.shippingMethodNew === shippingMethod.key"
-                                    > {{ shippingMethod.value }}
+                            <select (change)="element.category.id = $event.target.value; element.category.name = $event.target.options[$event.target.value-1].text">
+                                <option *ngFor="let category of productCategories | keyvalue"
+                                    [value]="category.key" [selected]="element.category.id === category.key"
+                                    > {{ category.value }}
                                 </option>
                             </select>
                         </span>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>
-                    <ng-container matColumnDef="status">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 3% !important;">Статус поруџбине</mat-header-cell>
-                        <mat-cell *matCellDef="let element">
-                            <span *ngIf="!element.isEditing">{{ statusOptions.get(element.status) }}</span>
-                            <span *ngIf="element.isEditing">
-                                <select (change)="element.statusNew = $event.target.value">
-                                    <option *ngFor="let status of statusOptions | keyvalue"
-                                        [value]="status.key" [selected]="element.statusNew === status.key"
-                                        > {{ status.value }}
-                                    </option>
-                                </select>
-                            </span>
-                        </mat-cell>
-                        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                    </ng-container>
-                <ng-container matColumnDef="actions">
-                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+
+                <ng-container matColumnDef="leftInStock">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 5% !important;">Количина на стању</mat-header-cell>
                     <mat-cell *matCellDef="let element">
-                        <button mat-icon-button *ngIf="!element.isEditing && element.status !== 'COMPLETED'" (click)="element.isEditing = true"><mat-icon>edit</mat-icon></button>
-                        <button mat-icon-button *ngIf="element.isEditing" (click)="element.isEditing = false; editOrder(element);"><mat-icon>check_circle</mat-icon></button>
-                        <button mat-icon-button (click)="deletion(element.id)"><mat-icon>delete_forever</mat-icon></button>
-                        <button mat-icon-button (click)="showOrderedItems(element.id)"><mat-icon>shopping_basket</mat-icon></button>
+                        <span *ngIf="!element.isEditing">{{ element.leftInStock === 0.00 ? "Нема на стању" : element.leftInStock }}</span>
+                        <span *ngIf="element.isEditing">
+                            <input type="number" min="0" max="99999" matInput [(ngModel)]="element.newStockQuantity"/>
+                        </span>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                 </ng-container>
 
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let rows; columns: displayedColumns;"></mat-row>
-            </mat-table> -->
+                <ng-container matColumnDef="price">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 8% !important;">Цена</mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <span *ngIf="!element.isEditing">{{ element.price.toLocaleString("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} динара</span>
+                        <span *ngIf="element.isEditing">
+                            <input type="number" min="0" max="9999999999" matInput [(ngModel)]="element.newPrice"/> динара
+                        </span>
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <button mat-icon-button *ngIf="!element.isEditing" (click)="element.isEditing = true"><mat-icon>edit</mat-icon></button>
+                        <button mat-icon-button *ngIf="element.isEditing" (click)="element.isEditing = false; editProduct(element);"><mat-icon>check_circle</mat-icon></button>
+                        <button mat-icon-button (click)="deleteProduct(element.id)"><mat-icon>delete_forever</mat-icon></button>
+                        <button mat-icon-button (click)="showProductDescription(element)"><mat-icon>info</mat-icon></button>
+                    </mat-cell>
+                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumnsProducts"></mat-header-row>
+                <mat-row *matRowDef="let rows; columns: displayedColumnsProducts;"></mat-row>
+            </mat-table>
             
-            <!-- <section fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="6%" fxLayoutGap.lt-sm="3%" fxFlex>
-                <mat-paginator [pageSize]="1" [pageSizeOptions]="pageSizeOptions"></mat-paginator>
+            <section fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="6%" fxLayoutGap.lt-sm="3%" fxFlex>
+                <mat-paginator [pageSize]="1" [pageSizeOptions]="pageSizeOptionsProduct"></mat-paginator>
                 <section fxLayout="row" fxLayoutAlign="space-evenly center" fxLayoutGap="5%" fxLayoutGap.lt-sm="2%">
-                    <button mat-stroked-button color="primary" (click)="find()">Пронађи поруџбину</button>
+                    <button mat-stroked-button color="primary" (click)="listProducts()">Излистај све производе и прикажи њихов укупан број</button>
+                    <!-- <button mat-stroked-button color="primary" (click)="find()">Пронађи поруџбину</button>
                     <button mat-stroked-button color="primary" (click)="showTotal()">Прикажи укупан број поруџбина</button>
                     <button mat-stroked-button color="primary" (click)="showTotalOfOrderedProducts()">Прикажи укупан број поручених производа</button>
-                    <button mat-stroked-button color="primary" (click)="listOrders()">Излистај све поруџбине</button>
+                    <button mat-stroked-button color="primary" (click)="listOrders()">Излистај све поруџбине</button> -->
                 </section>
-            </section> -->
+            </section>
             <section></section> <!-- Blank space -->
         </div>
     </mat-tab>
@@ -173,7 +182,7 @@
                     <mat-cell *matCellDef="let element">
                         <button mat-icon-button *ngIf="!element.isEditing && element.status !== 'COMPLETED'" (click)="element.isEditing = true"><mat-icon>edit</mat-icon></button>
                         <button mat-icon-button *ngIf="element.isEditing" (click)="element.isEditing = false; editReview(element);"><mat-icon>check_circle</mat-icon></button>
-                        <button mat-icon-button (click)="deleteReview(element.id)"><mat-icon>delete_forever</mat-icon></button>
+                        <button mat-icon-button (click)="deleteReview(element)"><mat-icon>delete_forever</mat-icon></button>
                         <button mat-icon-button (click)="showComment(element)"><mat-icon>info</mat-icon></button>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -187,7 +196,7 @@
                 <mat-paginator [pageSize]="1" [pageSizeOptions]="pageSizeOptions"></mat-paginator>
                 <section fxLayout="row" fxLayoutAlign="space-evenly center" fxLayoutGap="5%" fxLayoutGap.lt-sm="2%">
                     <!-- <button mat-stroked-button color="primary" (click)="find()">Пронађи рецензију</button> -->
-                    <button mat-stroked-button color="primary" (click)="listReviews()">Излистај све рецензије</button>
+                    <button mat-stroked-button color="primary" (click)="listReviews()">Излистај све рецензије и прикажи њихов укупан број</button>
                 </section>
             </section>
             <section></section> <!-- Blank space -->
