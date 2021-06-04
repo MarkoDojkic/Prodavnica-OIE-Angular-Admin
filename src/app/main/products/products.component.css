@@ -30,6 +30,22 @@
     width: 100%;
 }
 
+.mat-column-productName_ {
+    flex: 35
+}
+
+.mat-column-categoryName_ {
+    flex: 25;
+}
+
+.mat-column-leftInStock {
+    flex: 15;
+}
+
+.mat-column-price {
+    flex: 15;
+}
+
 form {
     height: 100%;
     overflow-y: hidden;
