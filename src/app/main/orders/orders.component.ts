@@ -264,7 +264,7 @@ export class OrdersComponent implements OnInit {
             if (response.value.length === j) { //All products deleted
               this.orderService.deleteOrderOnly(orderId).then(() => {
                 Swal.fire({
-                  title: "Поруџбина уклоњена јер су сви њени прозивди уклоњени",
+                  title: "Поруџбина уклоњена јер су сви њени производи уклоњени",
                   icon: "info",
                   showCancelButton: false,
                   confirmButtonText: "У реду",
@@ -309,7 +309,7 @@ export class OrdersComponent implements OnInit {
 
       setTimeout(() => {
         Swal.fire({
-          title: "Приказ поручених прозивода за поруџбину " + id,
+          title: "Приказ поручених производа за поруџбину " + id,
           html: document.querySelector("#orderedProductsDiv").innerHTML,
           showCancelButton: false,
           confirmButtonText: "У реду",
@@ -347,7 +347,7 @@ export class OrdersComponent implements OnInit {
     }).then(response => {
       if (response.isConfirmed) {
         var orderId = (<HTMLInputElement>Swal.getPopup().querySelector("#prodavnica-oie-admin-orderId")).value;
-        this.accountService.findAccount(parseInt(orderId)).then(response => {
+        this.orderService.findOrder(parseInt(orderId)).then(response => {
           if (response != null)
             Swal.fire({
               title: "Пронађени су подаци поруџбине са ИД-јем " + orderId,

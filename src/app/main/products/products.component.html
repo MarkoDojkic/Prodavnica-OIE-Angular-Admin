@@ -3,7 +3,7 @@
         <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="2%" class="mat-card">
             <mat-table [dataSource]="listedProducts" matSort>
                 <ng-container matColumnDef="productName_">
-                    <mat-header-cell *matHeaderCellDef style="margin-left: 15% !important;" mat-sort-header>Назив производа</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef style="margin-left: 13% !important;">Назив производа</mat-header-cell>
                     <mat-cell *matCellDef="let element">
                         <span>{{ element.name }}</span>
                     </mat-cell>
@@ -26,7 +26,7 @@
                 </ng-container>
 
                 <ng-container matColumnDef="leftInStock">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 5% !important;">Количина на стању</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 4% !important;">Количина на стању</mat-header-cell>
                     <mat-cell *matCellDef="let element">
                         <span *ngIf="!element.isEditing">{{ element.leftInStock === 0.00 ? "Нема на стању" : element.leftInStock }}</span>
                         <span *ngIf="element.isEditing">
@@ -37,7 +37,7 @@
                 </ng-container>
 
                 <ng-container matColumnDef="price">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 8% !important;">Цена</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header style="margin-left: 2% !important;">Цена</mat-header-cell>
                     <mat-cell *matCellDef="let element">
                         <span *ngIf="!element.isEditing">{{ element.price.toLocaleString("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} динара</span>
                         <span *ngIf="element.isEditing">
@@ -65,11 +65,8 @@
             <section fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="6%" fxLayoutGap.lt-sm="3%" fxFlex>
                 <mat-paginator [pageSize]="1" [pageSizeOptions]="pageSizeOptionsProduct"></mat-paginator>
                 <section fxLayout="row" fxLayoutAlign="space-evenly center" fxLayoutGap="5%" fxLayoutGap.lt-sm="2%">
+                    <button mat-stroked-button color="primary" (click)="findProduct()">Пронађи производ</button>
                     <button mat-stroked-button color="primary" (click)="listProducts()">Излистај све производе и прикажи њихов укупан број</button>
-                    <!-- <button mat-stroked-button color="primary" (click)="find()">Пронађи поруџбину</button>
-                    <button mat-stroked-button color="primary" (click)="showTotal()">Прикажи укупан број поруџбина</button>
-                    <button mat-stroked-button color="primary" (click)="showTotalOfOrderedProducts()">Прикажи укупан број поручених производа</button>
-                    <button mat-stroked-button color="primary" (click)="listOrders()">Излистај све поруџбине</button> -->
                 </section>
             </section>
             <section></section> <!-- Blank space -->
@@ -77,72 +74,53 @@
     </mat-tab>
 
     <mat-tab label="Додавање новог производа">
-        <!-- <form fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="1.2%" fxLayoutGap.lt-md="2.2%"
-        #form="ngForm" (ngSubmit)="addNewOrder(form)" (ngReset)="form.reset()" class="mat-card">
+        <form fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="1.2%" fxLayoutGap.lt-md="2.2%"
+        #form="ngForm" (ngSubmit)="addNewProduct(form)" (ngReset)="form.reset()" class="mat-card">
             <mat-form-field appearance="outline" fxFlex>
-                <mat-label>Наручилац</mat-label>
-                <mat-select matInput ngModel name="purchaser" required>
-                    <mat-option *ngFor="let purchaser of accounts" [value]="purchaser.id">
-                      {{ purchaser.name + " " + purchaser.surname }}
-                    </mat-option>
-                </mat-select>
-                <mat-icon matSuffix>person</mat-icon>
+                <mat-label>Назив производа</mat-label>
+                <input type="text" pattern="^[\u0410-\u0418\u0402\u0408\u041A-\u041F\u0409\u040A\u0420-\u0428\u040B\u040FA-Z\u0110\u017D\u0106\u010C\u0160\u0430-\u0438\u0452\u043A-\u043F\u045A\u0459\u0440-\u0448\u0458\u045B\u045Fa-z\u0111\u017E\u0107\u010D\u01610-9\s\-]+$" ngModel matInput name="productName" #nameInput="ngModel" required/>
+                    <mat-hint>пр. Sunpal SP150P6-36</mat-hint>
+                    <mat-error *ngIf="nameInput.hasError('required')">Поље имена производа не сме бити празно</mat-error>
+                <mat-icon matSuffix>short_text</mat-icon>
             </mat-form-field>
 
             <mat-form-field appearance="outline" fxFlex>
-                <mat-label>Начин доставе</mat-label>
-                <mat-select matInput ngModel name="shippingMethod" required>
-                    <mat-option *ngFor="let shippingMethod of shippingMethods | keyvalue"
-                        [value]="shippingMethod.key"> {{ shippingMethod.value }}
+                <mat-label>Категорија</mat-label>
+                <mat-select matInput ngModel name="category" required>
+                    <mat-option *ngFor="let category of productCategories | keyvalue"
+                        [value]="category"> {{ category.value }}
                     </mat-option>
                 </mat-select>
-                <mat-icon matSuffix>local_shipping</mat-icon>
+                <mat-icon matSuffix>category</mat-icon>
             </mat-form-field>
 
             <mat-form-field appearance="outline" fxFlex>
-                <mat-label>Статус</mat-label>
-                <mat-select matInput ngModel name="status" required>
-                    <mat-option *ngFor="let status of statusOptions | keyvalue"
-                    [value]="status.key"> {{ status.value }}
-                    </mat-option>
-                </mat-select>
-                <mat-icon matSuffix>pending</mat-icon>
+                <mat-label>Опис производа</mat-label>
+                <textarea maxlength="512" ngModel matInput name="description" #descriptionInput="ngModel" required></textarea>
+                    <mat-hint>Овде унети произвољни опис производа до 512 карактера</mat-hint>
+                    <mat-error *ngIf="descriptionInput.hasError('required')">Поље описа производа не сме бити празно</mat-error>
+                <mat-icon matSuffix>short_text</mat-icon>
             </mat-form-field>
 
             <mat-form-field appearance="outline" fxFlex>
-                <mat-label>Поручени производи</mat-label>
-                <mat-chip-list #productChipList >
-                    <mat-chip
-                      *ngFor="let product of productsPurchased"
-                      [selectable]="false"
-                      [removable]="true"
-                      (removed)="removeSelectedProduct(product)">
-                      {{ product.name + "(" + product.orderedQuantity + " комада)"}}
-                      <mat-icon matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                    <input
-                      placeholder="Унеси име производа"
-                      #productInput
-                      [formControl]="productInputControl"
-                      [matAutocomplete]="autocompleteProduct"
-                      [matChipInputFor]="productChipList"/>
-                  </mat-chip-list>
-                  <mat-autocomplete #autocompleteProduct="matAutocomplete" (optionSelected)="addSelectedProduct($event)">
-                    <mat-option *ngFor="let product of filteredProductNames | async" [value]="product">
-                      {{ product }}
-                    </mat-option>
-                  </mat-autocomplete>
+                <mat-label>Количина на стању (у комадима)</mat-label>
+                <span><input type="number" min="0" max="99999" matInput ngModel name="leftInStock"/></span>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" fxFlex>
+                <mat-label>Цена (у динарима)</mat-label>
+                <input type="number" min="0" max="9999999999" matInput ngModel name="price"/>
             </mat-form-field>
             
             <section fxLayout="row" fxLayoutGap="10px">
-                <button type="submit" mat-stroked-button color="primary" [disabled]="!checkRequiredFields(form)">Додај поруџбину</button>
+                <button type="submit" mat-stroked-button color="primary" [disabled]="!checkRequiredFields(form)">Додај производ</button>
                 <button type="reset" mat-stroked-button color="warn" [disabled]="form.pristine">Обриши све</button> 
             </section>
         </form>
-        <section></section> -->
+        <section></section>
     </mat-tab>
 
-    <mat-tab label="Додавање, измена и приказ рецензија">
+    <mat-tab label="Измена и приказ рецензија">
         <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="2%" class="mat-card">
         <mat-table [dataSource]="listedReviews" matSort>
                 <ng-container matColumnDef="nameSurname">
@@ -195,7 +173,7 @@
             <section fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="6%" fxLayoutGap.lt-sm="3%" fxFlex>
                 <mat-paginator [pageSize]="1" [pageSizeOptions]="pageSizeOptions"></mat-paginator>
                 <section fxLayout="row" fxLayoutAlign="space-evenly center" fxLayoutGap="5%" fxLayoutGap.lt-sm="2%">
-                    <!-- <button mat-stroked-button color="primary" (click)="find()">Пронађи рецензију</button> -->
+                    <button mat-stroked-button color="primary" (click)="findReview()">Пронађи рецензију</button>
                     <button mat-stroked-button color="primary" (click)="listReviews()">Излистај све рецензије и прикажи њихов укупан број</button>
                 </section>
             </section>
