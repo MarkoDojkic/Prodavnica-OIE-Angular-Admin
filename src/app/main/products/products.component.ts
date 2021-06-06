@@ -87,7 +87,7 @@ export class ProductsComponent implements OnInit {
         allowOutsideClick: false
       }).then(() => window.location.reload());
     }, reject => {
-      //console.log(reject);
+      //console.error(reject);
       Swal.fire({
         title: "Грешка приликом додавања новог производа",
         text: "Није могуће додати нов производ. Проверите да ли је Spring REST сервис активан.",
@@ -127,7 +127,7 @@ export class ProductsComponent implements OnInit {
             }, reject => Promise.reject(/* reject */))
           }, reject => Promise.reject(/* reject */))
         }, reject => {
-          //console.log(reject);
+          //console.error(reject);
           Swal.fire({
             title: "Грешка приликом уклањања производа",
             text: "Није могуће уклонити податке производа. Проверите да ли су сви потребни Spring REST сервиси активан.",
@@ -157,7 +157,7 @@ export class ProductsComponent implements OnInit {
         allowOutsideClick: false
       }).then(() => this.listProducts());
     }, reject => {
-      //console.log(reject);
+      //console.error(reject);
       Swal.fire({
         title: "Грешка приликом промене података",
         text: "Није могуће променити податке производа. Проверите да ли је Spring REST сервис активан.",
@@ -207,7 +207,7 @@ export class ProductsComponent implements OnInit {
               allowOutsideClick: false
             });
         }, reject => {
-          //console.log(reject);
+          //console.error(reject);
           Swal.fire({
             title: "Грешка приликом проналажења производа",
             text: "Није могуће пронађи производ. Проверите да ли је Spring REST сервис активан.",
@@ -265,7 +265,7 @@ export class ProductsComponent implements OnInit {
                 allowOutsideClick: false
               });
             }, reject => {
-              //console.log(reject);
+              //console.error(reject);
               Swal.fire({
                 title: "Грешка приликом преузимања података",
                 text: "Није могуће преузети листу производа. Проверите да ли је Spring REST сервис активан.",
@@ -278,7 +278,7 @@ export class ProductsComponent implements OnInit {
           }
         });
     }, reject => {
-      //console.log(reject);
+      //console.error(reject);
       Swal.fire({
         title: "Грешка приликом преузимања података",
         text: "Није могуће преузети укупан број свих рецензија за изабрани производ. Проверите да ли је Spring REST сервис активан.",
@@ -317,7 +317,7 @@ export class ProductsComponent implements OnInit {
             allowOutsideClick: false
           });
         }, reject => {
-          //console.log(reject);
+          //console.error(reject);
           Swal.fire({
             title: "Грешка приликом промене података",
             text: "Није могуће променити опис производа. Проверите да ли је Spring REST сервис активан.",
@@ -332,8 +332,6 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  /* Add review */
-
   editReview(review: ProductReview): void {
     this.productReviewService.updateProductReview(review.product_id, review.account_id, review).then(() => {
       Swal.fire({
@@ -344,7 +342,7 @@ export class ProductsComponent implements OnInit {
         allowOutsideClick: false
       });
     }, reject => {
-      //console.log(reject);
+      //console.error(reject);
       Swal.fire({
         title: "Грешка приликом промене података",
         text: "Није могуће променити оцену рецензије. Проверите да ли је Spring REST сервис активан.",
@@ -378,7 +376,7 @@ export class ProductsComponent implements OnInit {
             allowOutsideClick: false
           }).then(() => this.listAllReviews());
         }, reject => {
-          //console.log(reject);
+          //console.error(reject);
           Swal.fire({
             title: "Грешка приликом уклањања података",
             text: "Није могуће уклонити податке рецензије. Проверите да ли је Spring REST сервис активан.",
@@ -419,7 +417,7 @@ export class ProductsComponent implements OnInit {
             allowOutsideClick: false
           });
         }, reject => {
-          //console.log(reject);
+          //console.error(reject);
           Swal.fire({
             title: "Грешка приликом промене података",
             text: "Није могуће променити коментар рецензије. Проверите да ли је Spring REST сервис активан.",
@@ -477,7 +475,7 @@ export class ProductsComponent implements OnInit {
               allowOutsideClick: false
             });
         }, reject => {
-          //console.log(reject);
+          //console.error(reject);
           Swal.fire({
             title: "Грешка приликом проналажења рецензије",
             text: "Није могуће пронађи рецензију. Проверите да ли је Spring REST сервис активан.",
@@ -579,7 +577,7 @@ export class ProductsComponent implements OnInit {
                 });
               }, 2000); /* To give time to gather all data */
             }, reject => {
-              //console.log(reject);
+              //console.error(reject);
               Swal.fire({
                 title: "Грешка приликом преузимања података",
                 text: "Није могуће преузети листу рецензија. Проверите да ли је Spring REST сервис активан.",
@@ -592,7 +590,7 @@ export class ProductsComponent implements OnInit {
           }
         });
     }, reject => {
-      //console.log(reject);
+      //console.error(reject);
       Swal.fire({
         title: "Грешка приликом преузимања података",
         text: "Није могуће преузети укупан број свих рецензија за изабрани производ. Проверите да ли је Spring REST сервис активан.",
@@ -676,7 +674,7 @@ export class ProductsComponent implements OnInit {
                       });
                     }, 2000); /* To give time to gather all data */
                   }, reject => {
-                    //console.log(reject);
+                    //console.error(reject);
                     Swal.fire({
                       title: "Грешка приликом преузимања података",
                       text: "Није могуће преузети листу рецензија. Проверите да ли је Spring REST сервис активан.",
@@ -689,7 +687,7 @@ export class ProductsComponent implements OnInit {
                 }
               });
           }, reject => {
-            //console.log(reject);
+            //console.error(reject);
             Swal.fire({
               title: "Грешка приликом преузимања података",
               text: "Није могуће преузети укупан број свих рецензија за изабраног корисника. Проверите да ли је Spring REST сервис активан.",
@@ -776,7 +774,7 @@ export class ProductsComponent implements OnInit {
                       });
                     }, 2000); /* To give time to gather all data */
                   }, reject => {
-                    //console.log(reject);
+                    //console.error(reject);
                     Swal.fire({
                       title: "Грешка приликом преузимања података",
                       text: "Није могуће преузети листу рецензија за изабрани производ. Проверите да ли је Spring REST сервис активан.",
@@ -789,7 +787,7 @@ export class ProductsComponent implements OnInit {
                 }
               });
           }, reject => {
-            //console.log(reject);
+            //console.error(reject);
             Swal.fire({
               title: "Грешка приликом преузимања података",
               text: "Није могуће преузети укупан број свих рецензија за изабрани производ. Проверите да ли је Spring REST сервис активан.",
@@ -814,7 +812,7 @@ export class ProductsComponent implements OnInit {
         allowOutsideClick: false
       }).then(() => window.location.reload());
     }, reject => {
-      //console.log(reject);
+      //console.error(reject);
       Swal.fire({
         title: "Грешка приликом додавања нове категорије",
         text: "Није могуће додати нову категорију. Проверите да ли је Spring REST сервис активан.",
@@ -837,7 +835,7 @@ export class ProductsComponent implements OnInit {
         allowOutsideClick: false
       });
     }, reject => {
-      //console.log(reject);
+      //console.error(reject);
       Swal.fire({
         title: "Грешка приликом промене података",
         text: "Није могуће променити податке категорије. Проверите да ли је Spring REST сервис активан.",
@@ -882,7 +880,7 @@ export class ProductsComponent implements OnInit {
               allowOutsideClick: false
             }).then(() => window.location.reload());
           }, reject => {
-            //console.log(reject);
+            //console.error(reject);
             Swal.fire({
               title: "Грешка приликом уклањања података",
               text: "Није могуће уклонити податке категорије. Проверите да ли је Spring REST сервис активан.",
@@ -907,7 +905,7 @@ export class ProductsComponent implements OnInit {
         allowOutsideClick: false
       });
     }, reject => {
-      //console.log(reject);
+      //console.error(reject);
       Swal.fire({
         title: "Грешка приликом преузимања података",
         text: "Није могуће преузети податке о броју производа. Проверите да ли је Spring REST сервис активан.",
