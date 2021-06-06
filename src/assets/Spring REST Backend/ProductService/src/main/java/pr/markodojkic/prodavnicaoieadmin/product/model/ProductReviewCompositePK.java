@@ -1,7 +1,6 @@
 package pr.markodojkic.prodavnicaoieadmin.product.model;
 
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
 import java.io.Serializable;
 
 @Embeddable
